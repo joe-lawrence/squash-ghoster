@@ -2545,7 +2545,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function validateWorkoutJSON(workoutData) {
     try {
       // Use the new library's validation function directly
-      const { validateWorkoutJSON } = await import('./lib/new-workout-parser/parser.js');
+      const { validateWorkoutJSON } = await import('./lib/parser.js');
       validateWorkoutJSON(workoutData);
       return { success: true, errors: [] };
     } catch (error) {
@@ -2562,7 +2562,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function validatePatternJSON(pattern, context) {
     try {
       // Use the new library's validation function directly
-      const { validatePatternJSON } = await import('./lib/new-workout-parser/parser.js');
+      const { validatePatternJSON } = await import('./lib/parser.js');
       validatePatternJSON(pattern, context);
       return [];
     } catch (error) {
@@ -2579,7 +2579,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function validateEntryJSON(entry, context) {
     try {
       // Use the new library's validation function directly
-      const { validateEntryJSON } = await import('./lib/new-workout-parser/parser.js');
+      const { validateEntryJSON } = await import('./lib/parser.js');
       validateEntryJSON(entry, context);
       return [];
     } catch (error) {
@@ -3738,11 +3738,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       // Prompt user for URL
       const url = prompt(
-        "Enter the URL of the workout to load:\n\n" +
-        "Supported formats:\n" +
-        "• Direct JSON URLs\n" +
-        "• Hastebin links (will be converted to raw format)\n" +
-        "• Any other URL that returns workout JSON",
+        "Enter the URL of the workout to load:",
         ""
       );
 
