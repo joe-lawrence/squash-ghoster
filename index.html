@@ -1,0 +1,2898 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Squash Ghoster</title>
+
+    <!-- Mobile app settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="icon" href="images/favicon.ico" sizes="32x32">
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Tailwind CSS CDN: https://cdn.tailwindcss.com -->
+    <script src="tailwindcss.js"></script>
+
+    <link rel="stylesheet" href="styles.css?v=12" />
+
+    <!-- Setup WorkoutLib before scripts.js loads -->
+    <script type="module">
+        import {
+    loadWorkoutFromJsonWithValidation,
+    generateWorkoutTimeline,
+    timelineEventsToJson,
+    timelineEventsToSoundEvents,
+    calculateWorkoutStats,
+    estimateTTSDuration,
+    generatePreviewHtml,
+    validateWorkoutJSON,
+    validatePatternJSON,
+    validateEntryJSON,
+    calculateMessageDuration
+  } from "./lib/parser.js";
+
+  import {
+    parseTimeLimit,
+    formatTime,
+    formatTimePrecise,
+    formatTimeHighPrecision,
+    formatRemainingTime
+  } from "./lib/timing.js";
+
+  import {
+    shuffleArray,
+    shuffleArrayRespectingLinks
+  } from "./lib/utils.js";
+
+  import { 
+    findPatternInsertionPositionShared 
+  } from "./lib/clone-utils.js";
+
+        // Create the WorkoutLib API using the new library directly
+  window.WorkoutLib = {
+    calculateWorkoutStats,
+    estimateTTSDuration,
+    parseTimeLimit,
+    formatTime,
+    formatTimePrecise,
+    formatTimeHighPrecision,
+    formatRemainingTime,
+    shuffleArray,
+    shuffleArrayRespectingLinks,
+    generateWorkoutTimeline,
+    timelineEventsToJson,
+    timelineEventsToSoundEvents,
+    loadWorkoutFromJsonWithValidation,
+    validateWorkoutJSON,
+    validatePatternJSON,
+    validateEntryJSON,
+    generatePreviewHtml,
+    findPatternInsertionPositionShared,
+    calculateMessageDuration
+  };
+  
+  // DEBUG: Verify WorkoutLib is properly loaded
+  console.log('DEBUG: WorkoutLib loaded with functions:', {
+    timelineEventsToSoundEvents: typeof timelineEventsToSoundEvents,
+    generateWorkoutTimeline: typeof generateWorkoutTimeline,
+    calculateWorkoutStats: typeof calculateWorkoutStats
+  });
+    </script>
+
+                <script src="lib/json-formatter.cjs"></script>
+            <script type="module" src="scripts.js?v=22&t=20241225"></script>
+  </head>
+  <body>
+    <!-- Dropdown backdrop for blur effect -->
+    <div class="dropdown-backdrop" id="dropdownBackdrop"></div>
+    
+    <!-- Top toolbar icons -->
+    <div class="fixed top-4 left-4 flex flex-col gap-2 z-50">
+      <!-- Up/Down Chevron -->
+      <button
+        class="toolbar-icon-btn"
+        id="chevronBtn"
+        aria-label="Toggle"
+        title="Toggle"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16"/>
+          <path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4m0-12v2m0 18v-2m5 .66-1-1.73m-5-8.66L7 3.34M20.66 17l-1.73-1M3.34 7l1.73 1M14 12h8M2 12h2m16.66-5-1.73 1M3.34 17l1.73-1M17 3.34l-1 1.73m-5 8.66-4 6.93"/>
+        </svg>
+      </button>
+
+      <!-- Vertical button group -->
+      <div class="flex flex-col gap-2">
+        <!-- Editor -->
+        <div class="editor-btn-container">
+          <button
+            class="toolbar-icon-btn"
+            id="editorBtn"
+            aria-label="Editor"
+            title="Editor"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M12 20h9M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854zM15 5l3 3"/>
+            </svg>
+          </button>
+          <div class="editor-dropdown" id="editorDropdown">
+            <button class="editor-dropdown-item" id="autoCompleteMenuItem">
+              Auto-complete
+            </button>
+            <button class="editor-dropdown-item" id="openEditorMenuItem">
+              Full Editor
+            </button>
+          </div>
+        </div>
+
+        <!-- Execute -->
+        <div class="execute-btn-container">
+          <button
+            class="toolbar-icon-btn"
+            id="executeBtn"
+            aria-label="Execute"
+            title="Execute"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="m10 8 6 4-6 4z"/>
+            </svg>
+          </button>
+          <div class="execute-dropdown" id="executeDropdown">
+            <button class="execute-dropdown-item" id="prepTimeMenuItem">
+              <span>Prep Time</span>
+              <span style="margin-left:auto;display:flex;align-items:center;">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+            <button class="execute-dropdown-item" id="previewMenuItem">
+              Preview
+            </button>
+            <button class="execute-dropdown-item" id="runMenuItem">
+              Run
+            </button>
+          </div>
+          
+          <!-- Prep time submenu -->
+          <div class="execute-dropdown prep-time-submenu" id="prepTimeSubmenu">
+            <div class="prep-time-header">
+              <span>Prep Time</span>
+            </div>
+            <div class="prep-time-slider-container">
+              <input type="range" id="prepTimeSlider" min="0" max="300" step="10" value="0" class="prep-time-slider">
+              <div class="prep-time-value" id="prepTimeValue">0s</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Load -->
+        <div class="load-btn-container">
+          <button
+            class="toolbar-icon-btn"
+            id="loadBtn"
+            aria-label="Load"
+            title="Load"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4M2 15h10m-3 3 3-3-3-3"/>
+            </svg>
+          </button>
+          <div class="load-dropdown" id="loadDropdown">
+            <button class="load-dropdown-item" id="loadFileMenuItem">
+              Load File
+            </button>
+            <button class="load-dropdown-item" id="loadUrlMenuItem">
+              Load URL
+            </button>
+            <button class="load-dropdown-item" id="pasteMenuItem">
+              Paste
+            </button>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="save-btn-container">
+          <button
+            class="toolbar-icon-btn"
+            id="saveBtn"
+            aria-label="Save"
+            title="Save"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+              <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"/>
+            </svg>
+          </button>
+          <div class="save-dropdown" id="saveDropdown">
+            <button class="save-dropdown-item" id="saveFileMenuItem">
+              Save File
+            </button>
+            <button class="save-dropdown-item" id="copyMenuItem">
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- New Heart Button -->
+        <div class="heart-btn-container">
+          <button
+            class="toolbar-icon-btn"
+            id="heartBtn"
+            aria-label="Favorites"
+            title="Favorites"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          </button>
+          <div class="favorites-dropdown" id="favoritesDropdown">
+            <button class="favorites-dropdown-item" id="favoritesLoadMenuItem" disabled>Load</button>
+            <button class="favorites-dropdown-item" id="favoritesSaveMenuItem" disabled>Save</button>
+            <button class="favorites-dropdown-item" id="favoritesRemoveMenuItem" disabled>Remove</button>
+          </div>
+        </div>
+
+        <!-- Duck mode toggle button -->
+        <button
+          class="duck-toggle"
+          id="duckToggle"
+          aria-label="Toggle duck mode"
+          title="Audio Ducking"
+        >
+          <svg
+            class="duck-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          >
+            <path d="M2 10v3m4-7v11m4-14v18m4-13v7m4-10v13m4-8v3"/>
+          </svg>
+        </button>
+
+        <!-- Rocket mode toggle button -->
+        <button
+          class="rocket-toggle"
+          id="rocketToggle"
+          aria-label="Toggle rocket mode"
+          title="Rocket Surgery"
+        >
+          <svg
+            class="rocket-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 26 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          >
+            <path
+              d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2"
+            />
+            <path
+              d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0m1 7v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"
+            />
+          </svg>
+        </button>
+
+        <!-- Theme selector with dropdown -->
+        <div class="theme-selector-container">
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle theme"
+            title="Theme"
+          >
+            <svg
+              class="sun-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            <svg
+              class="moon-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          </button>
+
+          <div class="theme-dropdown" id="themeDropdown">
+            <div id="themeOptions">
+              <!-- Theme options will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Help button with dropdown -->
+        <div class="help-btn-container">
+          <button
+            class="toolbar-icon-btn"
+            id="helpBtn"
+            aria-label="Help"
+            title="Help"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01"/></svg>
+          </button>
+          <div class="help-dropdown" id="helpDropdown">
+            <button class="help-dropdown-item" id="quickStartMenuItem">
+              Quick Start
+            </button>
+            <button class="help-dropdown-item" id="fullHelpMenuItem">
+              Full Help
+            </button>
+            <button class="help-dropdown-item" id="aboutMenuItem">
+              About
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Main webapp container -->
+    <div class="webapp-container pt-20">
+      <!-- Banner image -->
+      <div class="banner-container">
+        <img src="images/banner-white.png" alt="Banner" class="banner-image banner-light" />
+        <img src="images/banner-black.png" alt="Banner" class="banner-image banner-dark" />
+      </div>
+
+      <!-- Outer container for all accordions (Patterns) -->
+      <div class="flex flex-col space-y-4" id="mainContainer">
+        <!-- Template for a new Pattern instance -->
+        <template id="patternInstanceTemplate">
+        <div
+          class="w-full max-w-2xl mx-auto rounded-xl bg-white p-0 shadow-lg pattern-instance"
+        >
+          <!-- Pattern Accordion Header -->
+          <div
+            class="w-full text-left p-4 rounded-t-lg flex justify-between items-center pattern-accordion-header relative"
+            role="button"
+            tabindex="0"
+          >
+            <!-- Purple gradient ribbon for pattern header -->
+            <div
+              class="absolute left-0 right-0 top-0 h-1 rounded-t-lg"
+              style="
+                background: linear-gradient(
+                  to right,
+                  #8b5cf6,
+                  #a855f7,
+                  #c084fc
+                );
+              "
+            ></div>
+            <!-- Editable title for Pattern Panel -->
+            <input
+              type="text"
+              value="Pattern"
+              class="font-semibold text-gray-700 bg-transparent border-none focus:outline-none w-full pattern-panel-title"
+              style="
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                margin-right: 12px;
+              "
+            />
+            <!-- Delete button for rocket mode off (hidden by default) -->
+            <button
+              class="p-2 rounded-full hover:bg-gray-100 pattern-delete-btn hidden"
+              title="Delete Pattern"
+              style="display: none"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <svg
+              class="w-5 h-5 text-gray-600 transform transition-transform duration-200 pattern-accordion-arrow"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Pattern Accordion Body -->
+          <div class="p-0 pattern-accordion-body">
+            <div class="relative inline-block text-left w-full">
+              <!-- Pattern toolbar (simplified) -->
+              <div
+                class="flex justify-between items-center border-b border-gray-200 p-2 pattern-toolbar"
+              >
+                <div class="flex items-center">
+                  <button
+                    class="p-1 rounded-full pattern-delete-btn"
+                    title="Delete Pattern"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <button
+                    class="p-1 rounded-full pattern-minimize-btn"
+                    title="Minimize"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600 pattern-minimize-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M4 14h6v6m10-10h-6V4m0 6 7-7M3 21l7-7" />
+                    </svg>
+                    <svg
+                      class="w-6 h-6 text-gray-600 pattern-expand-icon hidden"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="m21 21-6-6m6 6v-4.8m0 4.8h-4.8M3 16.2V21m0 0h4.8M3 21l6-6m12-7.2V3m0 0h-4.8M21 3l-6 6M3 7.8V3m0 0h4.8M3 3l6 6"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="p-1 rounded-full pattern-clone-btn"
+                    title="Clone Pattern"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                      <path
+                        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="p-1 rounded-full pattern-move-up-btn"
+                    title="Move Pattern Up"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="m5 12 7-7 7 7m-7 7V5" />
+                    </svg>
+                  </button>
+                  <button
+                    class="p-1 rounded-full pattern-move-down-btn"
+                    title="Move Pattern Down"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M12 5v14m7-7-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 settings-btn"
+                    title="Settings"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600 settings-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="19" cy="12" r="1" />
+                      <circle cx="5" cy="12" r="1" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pattern content (no more tab wrapper) -->
+              <div class="p-4 pb-0 relative pattern-content-wrapper">
+                <div
+                  class="mb-4 p-4 bg-white rounded-lg shadow-sm border border-gray-300 repeat-box"
+                >
+                  <div class="mb-3">
+                                          <select class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm repeat-type-select">
+                        <option value="fixed">Repeat: 1x</option>
+                        <option value="random">Random range: 0 to 3</option>
+                      </select>
+                  </div>
+
+
+                  <!-- Single Slider Container -->
+                  <div class="repeat-fixed-container relative h-12">
+                      <div class="absolute top-1/2 -translate-y-1/2 w-full" style="padding: 0 10px;">
+                          <input
+                              type="range"
+                              min="1"
+                              max="10"
+                              value="1"
+                              step="1"
+                              class="w-full repeat-slider"
+                          />
+                      </div>
+                  </div>
+                  
+                  <!-- Dual Slider Container -->
+                  <div class="repeat-random-container hidden relative h-12">
+                      <div class="absolute top-1/2 -translate-y-1/2 w-full repeat-slider-container" style="padding: 0 10px;">
+                          <!-- Slider Track -->
+                          <div class="relative w-full repeat-range-track">
+                              <!-- Selected Range Highlight -->
+                              <div class="absolute repeat-range-fill"></div>
+                              <!-- Min Thumb -->
+                              <div tabindex="0" class="absolute cursor-pointer -translate-x-1/2 top-1/2 -translate-y-1/2 repeat-min-thumb"></div>
+                              <!-- Max Thumb -->
+                              <div tabindex="0" class="absolute cursor-pointer -translate-x-1/2 top-1/2 -translate-y-1/2 repeat-max-thumb"></div>
+                          </div>
+                      </div>
+                  </div>
+
+                <div
+                  class="mb-4 p-4 bg-white rounded-lg shadow-sm border border-gray-300 pattern-order-box"
+                >
+                  <div class="mb-3">
+                    <select
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm iteration-type-select"
+                    >
+                      <option value="in-order" selected>In-order</option>
+                      <option value="shuffle">Shuffle</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <select
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm limits-type-select"
+                    >
+                      <option value="all-shots" selected>
+                        All pattern shots
+                      </option>
+                      <option value="shot-limit">Shot limit</option>
+                      <option value="time-limit">Time limit</option>
+                    </select>
+                  </div>
+                  <div class="hidden shot-limit-container">
+                    <label class="block text-sm font-medium text-gray-700 mb-2"
+                      >Shot limit:
+                      <span class="shot-limit-value">1</span></label
+                    >
+                    <input
+                      type="range"
+                      min="1"
+                      max="200"
+                      value="1"
+                      step="1"
+                      class="w-full shot-limit-slider"
+                    />
+                  </div>
+                  <div class="hidden time-limit-container">
+                    <label class="block text-sm font-medium text-gray-700 mb-2"
+                      >Time limit:
+                      <span class="time-limit-value">60:00</span></label
+                    >
+                    <input
+                      type="range"
+                      min="0"
+                      max="3600"
+                      value="600"
+                      step="30"
+                      class="w-full time-limit-slider"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="dropdown-content origin-top-right absolute right-0 top-0 w-full shadow-2xl bg-white border border-gray-300 focus:outline-none settings-panel"
+                >
+                  <div class="py-1 main-menu-content">
+                    <div class="group relative w-full">
+                      <button
+                        type="button"
+                        class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg position-lock-btn"
+                      >
+                        <div class="flex items-center">
+                          <svg
+                            class="w-4 h-4 mr-2 position-lock-checkmark hidden"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                          <span class="position-lock-text"
+                            >Lock into position 1</span
+                          >
+                        </div>
+                      </button>
+                    </div>
+
+                    <div
+                      class="group relative w-full link-with-previous-container hidden"
+                    >
+                      <button
+                        type="button"
+                        class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg link-with-previous-btn"
+                      >
+                        <div class="flex items-center">
+                          <svg
+                            class="w-4 h-4 mr-2 link-with-previous-checkmark hidden"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                          <span class="link-with-previous-text"
+                            >Link with previous</span
+                          >
+                        </div>
+                      </button>
+                    </div>
+
+                    <div class="border-t border-gray-200 my-1"></div>
+
+                    <div class="group relative w-full">
+                      <button
+                        type="button"
+                        class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg submenu-trigger"
+                        data-target-submenu-class="shot-interval-offset-submenu"
+                      >
+                        Interval
+                        <svg
+                          class="ml-auto h-5 w-5 text-gray-400 group-hover:text-gray-500 arrow-icon"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div class="group relative w-full">
+                      <button
+                        type="button"
+                        class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg submenu-trigger"
+                        data-target-submenu-class="split-step-submenu"
+                      >
+                        Split-step
+                        <svg
+                          class="ml-auto h-5 w-5 text-gray-400 group-hover:text-gray-500 arrow-icon"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div class="group relative w-full">
+                      <button
+                        type="button"
+                        class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg submenu-trigger"
+                        data-target-submenu-class="voice-submenu"
+                      >
+                        Voice
+                        <svg
+                          class="ml-auto h-5 w-5 text-gray-400 group-hover:text-gray-500 arrow-icon"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="submenu-content hidden bg-white border border-gray-300 shadow-2xl shot-interval-offset-submenu"
+                >
+                  <div
+                    class="absolute top-0 left-0 right-0 flex items-center p-2 bg-white border-b border-gray-300 h-16"
+                  >
+                    <button
+                      class="p-1 rounded-full hover:bg-gray-200 back-btn"
+                      data-action="back"
+                    >
+                      <svg
+                        class="h-6 w-6 text-gray-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1"
+                          d="M15 19l-7-7 7-7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <h3
+                      class="flex-grow text-lg font-semibold text-center text-gray-800"
+                    >
+                      Interval Settings
+                    </h3>
+                    <div class="p-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1"
+                      >
+                        <path d="M10 2h4m-2 12 3-3" />
+                        <circle cx="12" cy="14" r="8" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="pt-16 pb-4">
+                    <div class="px-4 py-2 text-sm text-gray-700">
+                      <label class="block font-medium mb-1"
+                        >Interval:
+                        <span class="shot-interval-value">5.0s</span></label
+                      >
+                      <input
+                        type="range"
+                        min="3.0"
+                        max="8.0"
+                        value="5.0"
+                        step="0.1"
+                        class="w-full shot-interval-slider"
+                      />
+                    </div>
+
+                    <div class="px-4 py-2 text-sm text-gray-700">
+                      <div class="flex items-center mb-2">
+                        <label class="flex items-center cursor-pointer">
+                          <div class="relative">
+                            <input
+                              type="checkbox"
+                              class="sr-only offset-enabled"
+                            />
+                            <div
+                              class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                            ></div>
+                            <div
+                              class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                            ></div>
+                          </div>
+                          <span
+                            class="ml-3 text-sm font-medium text-gray-700 offset-toggle-label"
+                            >Offset disabled</span
+                          >
+                        </label>
+                      </div>
+                      <div
+                        class="border-t border-gray-200 pt-2 mt-2 hidden offset-controls-container"
+                      >
+                        <select
+                          class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm offset-type-select"
+                        >
+                          <option value="fixed" class="offset-fixed-option">
+                            Fixed: 0.0s
+                          </option>
+                          <option value="random" class="offset-random-option">
+                            Random range: 0.0s to 0.0s
+                          </option>
+                        </select>
+
+                        <div class="mt-4 offset-fixed-container">
+                          <input
+                            type="range"
+                            min="-2"
+                            max="2"
+                            value="0"
+                            step="0.1"
+                            class="w-full offset-fixed-slider"
+                          />
+                        </div>
+
+                        <div class="mt-4 hidden offset-random-container">
+                          <label class="block text-xs font-medium text-gray-600 mb-1">Maximum:</label>
+                          <input
+                            type="range"
+                            min="-2"
+                            max="2"
+                            value="0"
+                            step="0.1"
+                            class="w-full offset-random-maximum-slider"
+                          />
+                          <label class="block text-xs font-medium text-gray-600 mb-1 mt-2">Minimum:</label>
+                          <input
+                            type="range"
+                            min="-2"
+                            max="2"
+                            value="0"
+                            step="0.1"
+                            class="w-full mt-1 offset-random-minimum-slider"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="submenu-content hidden bg-white border border-gray-300 shadow-2xl split-step-submenu"
+                >
+                  <div
+                    class="absolute top-0 left-0 right-0 flex items-center p-2 bg-white border-b border-gray-300 h-16"
+                  >
+                    <button
+                      class="p-1 rounded-full hover:bg-gray-200 back-btn"
+                      data-action="back"
+                    >
+                      <svg
+                        class="h-6 w-6 text-gray-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 19l-7-7 7-7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <h3
+                      class="flex-grow text-lg font-semibold text-center text-gray-800"
+                    >
+                      Split-step Settings
+                    </h3>
+                    <div class="p-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1"
+                      >
+                        <path d="M16 3h5v5M8 3H3v5" />
+                        <path
+                          d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3m12 6 6-6"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="pt-16 pb-4">
+                    <div class="px-4 py-2">
+                      <div class="flex items-center mb-2">
+                        <label class="flex items-center cursor-pointer">
+                          <div class="relative">
+                            <input
+                              type="checkbox"
+                              class="sr-only split-step-enabled"
+                              checked
+                            />
+                            <div
+                              class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                            ></div>
+                            <div
+                              class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                            ></div>
+                          </div>
+                          <span
+                            class="ml-3 text-sm font-medium text-gray-700 split-step-toggle-label"
+                            >Enabled</span
+                          >
+                        </label>
+                      </div>
+                      <div class="mb-2 split-step-rate-container">
+                        <select
+                          class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm split-step-speed-select"
+                        >
+                          <option value="auto-scale" selected>
+                            Auto-scale
+                          </option>
+                          <option value="slow">Slow</option>
+                          <option value="medium">Medium</option>
+                          <option value="fast">Fast</option>
+                          <option value="random">Random</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="submenu-content hidden bg-white border border-gray-300 shadow-2xl voice-submenu"
+                >
+                  <div
+                    class="absolute top-0 left-0 right-0 flex items-center p-2 bg-white border-b border-gray-300 h-16"
+                  >
+                    <button
+                      class="p-1 rounded-full hover:bg-gray-200 back-btn"
+                      data-action="back"
+                    >
+                      <svg
+                        class="h-6 w-6 text-gray-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 19l-7-7 7-7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <h3
+                      class="flex-grow text-lg font-semibold text-center text-gray-800"
+                    >
+                      Voice Settings
+                    </h3>
+                    <div class="p-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1"
+                      >
+                        <path
+                          d="m3 11 18-5v12L3 14zm8.6 5.8a3 3 0 1 1-5.8-1.6"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="pt-16 pb-4">
+                    <div class="px-4 py-2">
+                      <div class="flex items-center mb-2">
+                        <label class="flex items-center cursor-pointer">
+                          <div class="relative">
+                            <input
+                              type="checkbox"
+                              class="sr-only voice-enabled"
+                              checked
+                            />
+                            <div
+                              class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                            ></div>
+                            <div
+                              class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                            ></div>
+                          </div>
+                          <span
+                            class="ml-3 text-sm font-medium text-gray-700 voice-toggle-label"
+                            >Enabled</span
+                          >
+                        </label>
+                      </div>
+                      <div class="voice-options-container">
+                        <div class="mb-2">
+                          <select
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm voice-select"
+                          ></select>
+                        </div>
+                        <div class="mb-2">
+                          <select
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm voice-rate-select"
+                          >
+                            <option value="auto-scale" selected>
+                              Auto-scale
+                            </option>
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1.0">1.0x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                          </select>
+                        </div>
+                        <div class="mb-2 mt-4">
+                          <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Narration lead time:
+                            <span class="lead-time-value">2.5s</span></label
+                          >
+                          <input
+                            type="range"
+                            min="1.0"
+                            max="8.0"
+                            value="2.5"
+                            step="0.1"
+                            class="w-full lead-time-slider"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Container for dynamically added Shot/Msg instances within THIS Pattern -->
+              <div
+                class="flex flex-col space-y-4 px-4 pt-0 pb-4 shot-msg-instances-container"
+              ></div>
+
+              <!-- Add Shot/Msg Buttons for THIS Pattern -->
+              <div
+                class="flex justify-center space-x-4 mt-4 p-4 add-shot-msg-buttons"
+              >
+                <button
+                  class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md add-shot-btn"
+                >
+                  Add Shot
+                </button>
+                <button
+                  class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md add-msg-btn"
+                >
+                  Add Message
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Template for a new Shot instance -->
+      <template class="shot-instance-template">
+        <div
+          class="w-full border border-gray-300 rounded-lg shadow-lg bg-gray-50 shot-instance shot-msg-instance"
+        >
+          <!-- Header for Shot Instance -->
+          <div
+            class="w-full text-left p-4 rounded-t-lg flex justify-between items-center shot-header relative"
+            role="button"
+            tabindex="0"
+          >
+            <!-- Blue gradient ribbon for shot header -->
+            <div
+              class="absolute left-0 right-0 top-0 h-1 rounded-t-lg"
+              style="
+                background: linear-gradient(
+                  to right,
+                  #3b82f6,
+                  #60a5fa,
+                  #93c5fd
+                );
+              "
+            ></div>
+            <input
+              type="text"
+              value=""
+              placeholder="Shot name (optional)"
+              class="font-semibold text-gray-700 bg-transparent border-none focus:outline-none w-full shot-title"
+              style="
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                margin-right: 12px;
+              "
+            />
+            <!-- Delete button for rocket mode off (hidden by default) -->
+            <button
+              class="p-1 rounded-full hover:bg-gray-100 delete-btn hidden"
+              title="Delete"
+              style="display: none"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <svg
+              class="w-5 h-5 text-gray-600 transform transition-transform duration-200 shot-arrow"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Body of Shot Instance -->
+          <div class="p-0 shot-body">
+            <div class="relative inline-block text-left w-full">
+              <!-- Toolbar buttons for THIS instance -->
+              <div
+                class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 p-2 shot-toolbar"
+              >
+                <div class="flex items-center">
+                  <button class="p-1 rounded-full delete-btn" title="Delete">
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <button class="p-1 rounded-full clone-btn" title="Clone">
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                      <path
+                        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                      />
+                    </svg>
+                  </button>
+                  <button class="p-1 rounded-full move-up-btn" title="Move Up">
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="m5 12 7-7 7 7m-7 7V5" />
+                    </svg>
+                  </button>
+                  <button
+                    class="p-1 rounded-full move-down-btn"
+                    title="Move Down"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M12 5v14m7-7-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 settings-btn"
+                    title="Settings"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600 settings-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="19" cy="12" r="1" />
+                      <circle cx="5" cy="12" r="1" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="px-4 pt-2 pb-4 relative shot-content-wrapper">
+                <!-- Shot configuration content -->
+                <div class="shot-content-panel">
+                  <div
+                    class="mb-4 p-4 bg-white rounded-lg shadow-sm border border-gray-300 repeat-box"
+                  >
+                    <div class="mb-3">
+                      <select class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm repeat-type-select">
+                        <option value="fixed">Repeat: 1x</option>
+                        <option value="random">Random range: 0 to 3</option>
+                      </select>
+                    </div>
+
+                <!-- Single Slider Container -->
+                <div class="repeat-fixed-container relative h-12">
+                    <div class="absolute top-1/2 -translate-y-1/2 w-full" style="padding: 0 10px;">
+                        <input
+                            type="range"
+                            min="1"
+                            max="10"
+                            value="1"
+                            step="1"
+                            class="w-full repeat-slider"
+                        />
+                    </div>
+                </div>
+                
+                <!-- Dual Slider Container -->
+                <div class="repeat-random-container hidden relative h-12">
+                    <div class="absolute top-1/2 -translate-y-1/2 w-full repeat-slider-container" style="padding: 0 10px;">
+                        <!-- Slider Track -->
+                        <div class="relative w-full repeat-range-track">
+                            <!-- Selected Range Highlight -->
+                            <div class="absolute repeat-range-fill"></div>
+                            <!-- Min Thumb -->
+                            <div tabindex="0" class="absolute cursor-pointer -translate-x-1/2 top-1/2 -translate-y-1/2 repeat-min-thumb"></div>
+                            <!-- Max Thumb -->
+                            <div tabindex="0" class="absolute cursor-pointer -translate-x-1/2 top-1/2 -translate-y-1/2 repeat-max-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+
+                  <div
+                    class="dropdown-content origin-top-right absolute right-0 top-0 w-full shadow-2xl bg-white border border-gray-300 focus:outline-none settings-panel"
+                  >
+                    <div class="py-1 main-menu-content">
+                      <div class="group relative w-full">
+                        <button
+                          type="button"
+                          class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg position-lock-btn"
+                        >
+                          <div class="flex items-center">
+                            <svg
+                              class="w-4 h-4 mr-2 position-lock-checkmark hidden"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                            <span class="position-lock-text"
+                              >Lock into position 1</span
+                            >
+                          </div>
+                        </button>
+                      </div>
+
+                      <div
+                        class="group relative w-full link-with-previous-container hidden"
+                      >
+                        <button
+                          type="button"
+                          class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg link-with-previous-btn"
+                        >
+                          <div class="flex items-center">
+                            <svg
+                              class="w-4 h-4 mr-2 link-with-previous-checkmark hidden"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                            <span class="link-with-previous-text"
+                              >Link with previous</span
+                            >
+                          </div>
+                        </button>
+                      </div>
+
+                      <div class="border-t border-gray-200 my-1"></div>
+
+                      <div class="group relative w-full">
+                        <button
+                          type="button"
+                          class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg submenu-trigger"
+                          data-target-submenu-class="shot-interval-offset-submenu"
+                        >
+                          Interval
+                          <svg
+                            class="ml-auto h-5 w-5 text-gray-400 group-hover:text-gray-500 arrow-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div class="group relative w-full">
+                        <button
+                          type="button"
+                          class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg submenu-trigger"
+                          data-target-submenu-class="split-step-submenu"
+                        >
+                          Split-step
+                          <svg
+                            class="ml-auto h-5 w-5 text-gray-400 group-hover:text-gray-500 arrow-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div class="group relative w-full">
+                        <button
+                          type="button"
+                          class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg submenu-trigger"
+                          data-target-submenu-class="voice-submenu"
+                        >
+                          Voice
+                          <svg
+                            class="ml-auto h-5 w-5 text-gray-400 group-hover:text-gray-500 arrow-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      class="submenu-content hidden bg-white border border-gray-300 shadow-2xl shot-interval-offset-submenu"
+                    >
+                      <div
+                        class="absolute top-0 left-0 right-0 flex items-center p-2 bg-white border-b border-gray-300 h-16"
+                      >
+                        <button
+                          class="p-1 rounded-full hover:bg-gray-200 back-btn"
+                          data-action="back"
+                        >
+                          <svg
+                            class="h-6 w-6 text-gray-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="1"
+                              d="M15 19l-7-7 7-7"
+                            ></path>
+                          </svg>
+                        </button>
+                        <h3
+                          class="flex-grow text-lg font-semibold text-center text-gray-800"
+                        >
+                          Interval Settings
+                        </h3>
+                        <div class="p-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1"
+                          >
+                            <path d="M10 2h4m-2 12 3-3" />
+                            <circle cx="12" cy="14" r="8" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div class="pt-16 pb-4">
+                        <div class="px-4 py-2 text-sm text-gray-700">
+                          <label class="block font-medium mb-1"
+                            >Interval:
+                            <span class="shot-interval-value">5.0s</span></label
+                          >
+                          <input
+                            type="range"
+                            min="3.0"
+                            max="8.0"
+                            value="5.0"
+                            step="0.1"
+                            class="w-full shot-interval-slider"
+                          />
+                        </div>
+
+                        <div class="px-4 py-2 text-sm text-gray-700">
+                          <div class="flex items-center mb-2">
+                            <label class="flex items-center cursor-pointer">
+                              <div class="relative">
+                                <input
+                                  type="checkbox"
+                                  class="sr-only offset-enabled"
+                                />
+                                <div
+                                  class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                                ></div>
+                                <div
+                                  class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                                ></div>
+                              </div>
+                              <span
+                                class="ml-3 text-sm font-medium text-gray-700 offset-toggle-label"
+                                >Offset disabled</span
+                              >
+                            </label>
+                          </div>
+                          <div
+                            class="border-t border-gray-200 pt-2 mt-2 hidden offset-controls-container"
+                          >
+                            <select
+                              class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm offset-type-select"
+                            >
+                              <option value="fixed" class="offset-fixed-option">
+                                Fixed: 0.0s
+                              </option>
+                              <option value="random" class="offset-random-option">
+                                Random range: 0.0s to 0.0s
+                              </option>
+                            </select>
+
+                            <div class="mt-4 offset-fixed-container">
+                              <input
+                                type="range"
+                                min="-2"
+                                max="2"
+                                value="0"
+                                step="0.1"
+                                class="w-full offset-fixed-slider"
+                              />
+                            </div>
+
+                            <div class="mt-4 hidden offset-random-container">
+                              <label class="block text-xs font-medium text-gray-600 mb-1">Maximum:</label>
+                              <input
+                                type="range"
+                                min="-2"
+                                max="2"
+                                value="0"
+                                step="0.1"
+                                class="w-full offset-random-maximum-slider"
+                              />
+                              <label class="block text-xs font-medium text-gray-600 mb-1 mt-2">Minimum:</label>
+                              <input
+                                type="range"
+                                min="-2"
+                                max="2"
+                                value="0"
+                                step="0.1"
+                                class="w-full mt-1 offset-random-minimum-slider"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="submenu-content hidden bg-white border border-gray-300 shadow-2xl split-step-submenu"
+                    >
+                      <div
+                        class="absolute top-0 left-0 right-0 flex items-center p-2 bg-white border-b border-gray-300 h-16"
+                      >
+                        <button
+                          class="p-1 rounded-full hover:bg-gray-200 back-btn"
+                          data-action="back"
+                        >
+                          <svg
+                            class="h-6 w-6 text-gray-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 19l-7-7 7-7"
+                            ></path>
+                          </svg>
+                        </button>
+                        <h3
+                          class="flex-grow text-lg font-semibold text-center text-gray-800"
+                        >
+                          Split-step Settings
+                        </h3>
+                        <div class="p-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1"
+                          >
+                            <path d="M16 3h5v5M8 3H3v5" />
+                            <path
+                              d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3m12 6 6-6"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div class="pt-16 pb-4">
+                        <div class="px-4 py-2">
+                          <div class="flex items-center mb-2">
+                            <label class="flex items-center cursor-pointer">
+                              <div class="relative">
+                                <input
+                                  type="checkbox"
+                                  class="sr-only split-step-enabled"
+                                  checked
+                                />
+                                <div
+                                  class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                                ></div>
+                                <div
+                                  class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                                ></div>
+                              </div>
+                              <span
+                                class="ml-3 text-sm font-medium text-gray-700 split-step-toggle-label"
+                                >Enabled</span
+                              >
+                            </label>
+                          </div>
+                          <div class="mb-2 split-step-rate-container">
+                            <select
+                              class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm split-step-speed-select"
+                            >
+                              <option value="auto-scale" selected>
+                                Auto-scale
+                              </option>
+                              <option value="slow">Slow</option>
+                              <option value="medium">Medium</option>
+                              <option value="fast">Fast</option>
+                              <option value="random">Random</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="submenu-content hidden bg-white border border-gray-300 shadow-2xl voice-submenu"
+                    >
+                      <div
+                        class="absolute top-0 left-0 right-0 flex items-center p-2 bg-white border-b border-gray-300 h-16"
+                      >
+                        <button
+                          class="p-1 rounded-full hover:bg-gray-200 back-btn"
+                          data-action="back"
+                        >
+                          <svg
+                            class="h-6 w-6 text-gray-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 19l-7-7 7-7"
+                            ></path>
+                          </svg>
+                        </button>
+                        <h3
+                          class="flex-grow text-lg font-semibold text-center text-gray-800"
+                        >
+                          Voice Settings
+                        </h3>
+                        <div class="p-1">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1"
+                          >
+                            <path
+                              d="m3 11 18-5v12L3 14zm8.6 5.8a3 3 0 1 1-5.8-1.6"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div class="pt-16 pb-4">
+                        <div class="px-4 py-2">
+                          <div class="flex items-center mb-2">
+                            <label class="flex items-center cursor-pointer">
+                              <div class="relative">
+                                <input
+                                  type="checkbox"
+                                  class="sr-only voice-enabled"
+                                  checked
+                                />
+                                <div
+                                  class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                                ></div>
+                                <div
+                                  class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                                ></div>
+                              </div>
+                              <span
+                                class="ml-3 text-sm font-medium text-gray-700 voice-toggle-label"
+                                >Enabled</span
+                              >
+                            </label>
+                          </div>
+                          <div class="voice-options-container">
+                            <div class="mb-2">
+                              <select
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm voice-select"
+                              ></select>
+                            </div>
+                            <div class="mb-2">
+                              <select
+                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm voice-rate-select"
+                              >
+                                <option value="auto-scale" selected>
+                                  Auto-scale
+                                </option>
+                                <option value="0.5">0.5x</option>
+                                <option value="0.75">0.75x</option>
+                                <option value="1.0">1.0x</option>
+                                <option value="1.25">1.25x</option>
+                                <option value="1.5">1.5x</option>
+                              </select>
+                            </div>
+                            <div class="mb-2 mt-4">
+                              <label
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >Narration lead time:
+                                <span class="lead-time-value">2.5s</span></label
+                              >
+                              <input
+                                type="range"
+                                min="1.0"
+                                max="8.0"
+                                value="2.5"
+                                step="0.1"
+                                class="w-full lead-time-slider"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Template for a new Message instance -->
+      <template class="message-instance-template">
+        <div
+          class="w-full border border-gray-300 rounded-lg shadow-lg bg-gray-50 message-instance shot-msg-instance"
+        >
+          <!-- Header for Message Instance -->
+          <div
+            class="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-t-lg flex justify-between items-center message-header relative"
+            role="button"
+            tabindex="0"
+          >
+            <!-- Cyan gradient ribbon for message header -->
+            <div
+              class="absolute left-0 right-0 top-0 h-1 rounded-t-lg"
+              style="
+                background: linear-gradient(
+                  to right,
+                  #06b6d4,
+                  #22d3ee,
+                  #67e8f9
+                );
+              "
+            ></div>
+            <input
+              type="text"
+              value="Message"
+              class="font-semibold text-gray-700 bg-transparent border-none focus:outline-none w-full message-title"
+              style="
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                margin-right: 12px;
+              "
+            />
+            <!-- Delete button for rocket mode off (hidden by default) -->
+            <button
+              class="p-1 rounded-full hover:bg-gray-100 delete-btn hidden"
+              title="Delete"
+              style="display: none"
+            >
+              <svg
+                class="w-5 h-5 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <svg
+              class="w-5 h-5 text-gray-600 transform transition-transform duration-200 message-arrow"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Body of Message Instance -->
+          <div class="p-0 message-body">
+            <div class="relative inline-block text-left w-full">
+              <!-- Toolbar buttons for THIS instance -->
+              <div
+                class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 p-2 message-toolbar"
+              >
+                <div class="flex items-center">
+                  <button class="p-1 rounded-full delete-btn" title="Delete">
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <button class="p-1 rounded-full clone-btn" title="Clone">
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                      <path
+                        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                      />
+                    </svg>
+                  </button>
+                  <button class="p-1 rounded-full move-up-btn" title="Move Up">
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="m5 12 7-7 7 7m-7 7V5" />
+                    </svg>
+                  </button>
+                  <button
+                    class="p-1 rounded-full move-down-btn"
+                    title="Move Down"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <path d="M12 5v14m7-7-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 settings-btn"
+                    title="Settings"
+                  >
+                    <svg
+                      class="w-6 h-6 text-gray-600 settings-icon"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    >
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="19" cy="12" r="1" />
+                      <circle cx="5" cy="12" r="1" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="px-4 pt-2 pb-4 relative message-content-wrapper">
+                <!-- Message configuration content -->
+                <div class="message-content-panel">
+                  <div class="px-4 py-2 text-sm text-gray-700">
+                    <label class="block font-medium mb-1">Message:</label>
+                    <input
+                      type="text"
+                      class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm message-input"
+                      placeholder="Enter announcement message"
+                    />
+                  </div>
+                  <div class="px-4 py-2 text-sm text-gray-700">
+                    <label class="block font-medium mb-1">Interval Mode:</label>
+                    <select
+                      class="mt-1 mb-3 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm message-interval-type-select"
+                    >
+                      <option value="fixed" class="message-interval-type-fixed-option">
+                        Fixed: <span class="message-interval-value">0s</span>
+                      </option>
+                      <option value="additional" class="message-interval-type-additional-option">
+                        Additional: <span class="message-interval-value">0s</span>
+                      </option>
+                    </select>
+                    <input
+                      type="range"
+                      min="0"
+                      max="300"
+                      value="0"
+                      step="1"
+                      class="w-full message-interval-slider"
+                    />
+                  </div>
+                  <div class="px-4 py-2 text-sm text-gray-700">
+                    <div class="flex items-center mb-2">
+                      <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                          <input
+                            type="checkbox"
+                            class="sr-only message-countdown-enabled"
+                          />
+                          <div
+                            class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                          ></div>
+                          <div
+                            class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                          ></div>
+                        </div>
+                        <span
+                          class="ml-3 text-sm font-medium text-gray-700 countdown-toggle-label"
+                          >Countdown: Off</span
+                        >
+                      </label>
+                    </div>
+                  </div>
+                  <div class="px-4 py-2 text-sm text-gray-700 repeat-box">
+                    <div class="flex items-center">
+                      <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                          <input
+                            type="checkbox"
+                            class="sr-only skip-at-end-of-workout"
+                          />
+                          <div
+                            class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                          ></div>
+                          <div
+                            class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                          ></div>
+                        </div>
+                        <span
+                          class="ml-3 text-sm font-medium text-gray-700 skip-toggle-label"
+                          >Always play message</span
+                        >
+                      </label>
+                    </div>
+                  </div>
+
+                  <div
+                    class="dropdown-content origin-top-right absolute right-0 top-0 w-full shadow-2xl bg-white border border-gray-300 focus:outline-none settings-panel"
+                  >
+                    <div class="py-1 main-menu-content">
+                      <div class="group relative w-full">
+                        <button
+                          type="button"
+                          class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg position-lock-btn"
+                        >
+                          <div class="flex items-center">
+                            <svg
+                              class="w-4 h-4 mr-2 position-lock-checkmark hidden"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                            <span class="position-lock-text"
+                              >Lock into position 1</span
+                            >
+                          </div>
+                        </button>
+                      </div>
+
+                      <div
+                        class="group relative w-full link-with-previous-container hidden"
+                      >
+                        <button
+                          type="button"
+                          class="flex justify-between items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg link-with-previous-btn"
+                        >
+                          <div class="flex items-center">
+                            <svg
+                              class="w-4 h-4 mr-2 link-with-previous-checkmark hidden"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                            <span class="link-with-previous-text"
+                              >Link with previous</span
+                            >
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+
+
+      <!-- Dynamic Add Pattern Button Container -->
+      <div id="addPatternContainer" class="flex justify-center mb-4">
+        <button
+          id="addPatternBtn"
+          class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md"
+          title="Add Pattern"
+        >
+          Add Pattern
+        </button>
+      </div>
+      <!-- Hidden file input for loading workouts -->
+      <input
+        type="file"
+        id="workoutFileInput"
+        accept=".workout.json,.json"
+        style="display: none"
+      />
+
+      <!-- Default Config Accordion -->
+      <div
+        class="w-full max-w-2xl mx-auto rounded-xl bg-white p-0 shadow-lg mb-4"
+        id="defaultConfigAccordion"
+      >
+        <!-- Default Config Header -->
+        <div
+          class="w-full text-left p-4 rounded-t-lg flex justify-between items-center default-config-header relative"
+          id="defaultConfigHeader"
+          role="button"
+          tabindex="0"
+        >
+          <!-- Red gradient ribbon for workout accordion header -->
+          <div
+            class="absolute left-0 right-0 top-0 h-1 rounded-t-lg"
+            style="
+              background: linear-gradient(to right, #dc2626, #ef4444, #f87171);
+            "
+          ></div>
+          <input
+            type="text"
+            value="Default Config"
+            class="font-semibold text-gray-700 bg-transparent border-none focus:outline-none w-full workout-name"
+            style="box-shadow: none; padding: 0; margin: 0; margin-right: 12px"
+          />
+          <svg
+            class="w-5 h-5 text-gray-600 transform transition-transform duration-200"
+            id="defaultConfigArrow"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
+        </div>
+
+        <!-- Default Config Body -->
+        <div class="p-4 hidden" id="defaultConfigBody">
+          <!-- Pattern iteration Settings (Inline) -->
+          <div
+            class="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-300"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-800">
+                Pattern iteration
+              </h3>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+              >
+                <path
+                  d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"
+                />
+              </svg>
+            </div>
+            <div class="mb-3">
+              <select
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                id="defaultIterationTypeSelect"
+              >
+                <option value="in-order" selected>In-order</option>
+                <option value="shuffle">Shuffle</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <select
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                id="defaultLimitsTypeSelect"
+              >
+                <option value="all-shots" selected>All pattern shots</option>
+                <option value="shot-limit">Shot limit</option>
+                <option value="time-limit">Time limit</option>
+              </select>
+            </div>
+            <div class="hidden" id="defaultShotLimitContainer">
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Shot limit: <span id="defaultShotLimitValue">1</span></label
+              >
+              <input
+                type="range"
+                min="1"
+                max="200"
+                value="1"
+                step="1"
+                class="w-full"
+                id="defaultShotLimitSlider"
+              />
+            </div>
+            <div class="hidden" id="defaultTimeLimitContainer">
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Time limit:
+                <span id="defaultTimeLimitValue">60:00</span></label
+              >
+              <input
+                type="range"
+                min="0"
+                max="3600"
+                value="600"
+                step="30"
+                class="w-full"
+                id="defaultTimeLimitSlider"
+              />
+            </div>
+          </div>
+
+          <!-- Interval Settings (Inline) -->
+          <div
+            class="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-300"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-800">
+                Interval Settings
+              </h3>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+              >
+                <path d="M10 2h4m-2 12 3-3" />
+                <circle cx="12" cy="14" r="8" />
+              </svg>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Interval:
+                <span id="defaultShotIntervalValue">5.0s</span></label
+              >
+              <input
+                type="range"
+                min="3.0"
+                max="8.0"
+                value="5.0"
+                step="0.1"
+                class="w-full"
+                id="defaultShotIntervalSlider"
+              />
+            </div>
+
+            <div class="mb-4">
+              <div class="flex items-center mb-2">
+                <label class="flex items-center cursor-pointer">
+                  <div class="relative">
+                    <input
+                      type="checkbox"
+                      class="sr-only"
+                      id="defaultOffsetEnabled"
+                    />
+                    <div
+                      class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                    ></div>
+                    <div
+                      class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                    ></div>
+                  </div>
+                  <span
+                    class="ml-3 text-sm font-medium text-gray-700"
+                    id="defaultOffsetToggleLabel"
+                    >Offset disabled</span
+                  >
+                </label>
+              </div>
+              <div
+                class="border-t border-gray-200 pt-2 mt-2 hidden"
+                id="defaultOffsetControlsContainer"
+              >
+                <select
+                  class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm mb-4"
+                  id="defaultOffsetTypeSelect"
+                >
+                  <option value="fixed" id="defaultOffsetFixedOption">
+                    Fixed: 0.0s
+                  </option>
+                  <option value="random" id="defaultOffsetRandomOption">
+                    Random range: 0.0s to 0.0s
+                  </option>
+                </select>
+
+                <div id="defaultOffsetFixedContainer">
+                  <input
+                    type="range"
+                    min="-2"
+                    max="2"
+                    value="0"
+                    step="0.1"
+                    class="w-full"
+                    id="defaultOffsetFixedSlider"
+                  />
+                </div>
+
+                <div class="hidden" id="defaultOffsetRandomContainer">
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Maximum:</label>
+                  <input
+                    type="range"
+                    min="-2"
+                    max="2"
+                    value="0"
+                    step="0.1"
+                    class="w-full mb-2"
+                    id="defaultOffsetRandomMaximumSlider"
+                  />
+                  <label class="block text-xs font-medium text-gray-600 mb-1">Minimum:</label>
+                  <input
+                    type="range"
+                    min="-2"
+                    max="2"
+                    value="0"
+                    step="0.1"
+                    class="w-full"
+                    id="defaultOffsetRandomMinimumSlider"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Split-step Settings (Inline) -->
+          <div
+            class="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-300"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-800">
+                Split-step Settings
+              </h3>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+              >
+                <path d="M16 3h5v5M8 3H3v5" />
+                <path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3m12 6 6-6" />
+              </svg>
+            </div>
+            <div class="mb-4">
+              <div class="flex items-center mb-2">
+                <label class="flex items-center cursor-pointer">
+                  <div class="relative">
+                    <input
+                      type="checkbox"
+                      class="sr-only"
+                      id="defaultSplitStepEnabled"
+                      checked
+                    />
+                    <div
+                      class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                    ></div>
+                    <div
+                      class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                    ></div>
+                  </div>
+                  <span
+                    class="ml-3 text-sm font-medium text-gray-700"
+                    id="defaultSplitStepToggleLabel"
+                    >Enabled</span
+                  >
+                </label>
+              </div>
+              <div id="defaultSplitStepRateContainer">
+                <select
+                  class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                  id="defaultSplitStepSpeedSelect"
+                >
+                  <option value="auto-scale" selected>Auto-scale</option>
+                  <option value="slow">Slow</option>
+                  <option value="medium">Medium</option>
+                  <option value="fast">Fast</option>
+                  <option value="random">Random</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Voice Settings (Inline) -->
+          <div
+            class="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-300"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-800">
+                Voice Settings
+              </h3>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+              >
+                <path d="m3 11 18-5v12L3 14zm8.6 5.8a3 3 0 1 1-5.8-1.6" />
+              </svg>
+            </div>
+            <div class="mb-4">
+              <div class="flex items-center mb-2">
+                <label class="flex items-center cursor-pointer">
+                  <div class="relative">
+                    <input
+                      type="checkbox"
+                      class="sr-only"
+                      id="defaultVoiceEnabled"
+                      checked
+                    />
+                    <div
+                      class="w-10 h-6 bg-gray-400 rounded-full shadow-inner toggle-bg"
+                    ></div>
+                    <div
+                      class="absolute w-4 h-4 bg-white rounded-full shadow toggle-dot top-1 left-1 transition"
+                    ></div>
+                  </div>
+                  <span
+                    class="ml-3 text-sm font-medium text-gray-700"
+                    id="defaultVoiceToggleLabel"
+                    >Enabled</span
+                  >
+                </label>
+              </div>
+              <div id="defaultVoiceOptionsContainer">
+                <div class="mb-2">
+                  <select
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    id="defaultVoiceSelect"
+                  ></select>
+                </div>
+                <div class="mb-2">
+                  <select
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+                    id="defaultVoiceRateSelect"
+                  >
+                    <option value="auto-scale" selected>Auto-scale</option>
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1.0">1.0x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                  </select>
+                </div>
+                <div class="mb-2 mt-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Narration lead time:
+                    <span id="defaultLeadTimeValue">2.5s</span></label
+                  >
+                  <input
+                    type="range"
+                    min="1.0"
+                    max="8.0"
+                    value="2.5"
+                    step="0.1"
+                    class="w-full"
+                    id="defaultLeadTimeSlider"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer image -->
+    <div class="footer-container">
+      <img src="images/footer-white.png" alt="Footer" class="footer-image footer-light" />
+      <img src="images/footer-black.png" alt="Footer" class="footer-image footer-dark" />
+    </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="resetConfigModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h3
+          class="text-lg font-semibold text-gray-900 mb-4"
+          id="resetConfigModalTitle"
+        >
+          Reset Local Configurations
+        </h3>
+        <p class="text-sm text-gray-600 mb-6" id="resetConfigModalText">
+          This will reset all local pattern, shot, and message configurations to
+          their global default values. This action cannot be undone.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button
+            id="modalCancelBtn"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+          >
+            Cancel
+          </button>
+          <button
+            id="modalOkBtn"
+            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+          >
+            Reset Configs
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generic Deletion Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h3
+          class="text-lg font-semibold text-gray-900 mb-4"
+          id="deleteModalTitle"
+        >
+          Delete Entry
+        </h3>
+        <p class="text-sm text-gray-600 mb-6">
+          Are you sure you want to delete this entry? This action cannot be
+          undone.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button
+            id="deleteModalCancelBtn"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+          >
+            Cancel
+          </button>
+          <button
+            id="deleteModalOkBtn"
+            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workout Preview Modal -->
+    <div id="previewModal" class="preview-fullscreen-container hidden">
+      <div
+        class="preview-modal-content"
+      >
+        <!-- Preview Header with Controls -->
+        <div class="preview-header">
+          <div class="preview-status">
+            <div class="preview-status-spacer"></div>
+            <span id="previewWorkoutName">Preview</span>
+          </div>
+
+          <!-- Header Controls -->
+          <div class="preview-header-controls">
+            <button id="playPauseBtn" class="preview-btn-header preview-btn-play">
+              <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                <polygon points="5,3 19,12 5,21"/>
+              </svg>
+              <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="hidden">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+            </button>
+            <div id="timelineTimer" class="preview-timer">
+              00:00.00
+            </div>
+            <button id="presentBtn" class="preview-btn-header preview-btn-present" title="Present at current time">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M2 3h20m-1 0v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3m4 18 5-5 5 5"/>
+              </svg>
+            </button>
+            <button id="closePreviewBtn" class="preview-close-btn">×</button>
+          </div>
+        </div>
+        <div id="previewContent" class="p-4 overflow-y-auto flex-1">
+          <!-- Preview content will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Workout Execution Modal -->
+    <div id="workoutModal" class="workout-fullscreen-container hidden">
+      <div class="workout-modal-content">
+        <!-- Mobile Header with Controls -->
+        <div class="workout-header">
+          <div class="workout-status">
+            <div id="workoutStatusIndicator" class="workout-status-ghost">
+              <img id="workoutStatusGhostImage" src="images/ghost-black.png" alt="Ghost" width="22" height="22">
+            </div>
+            <span id="workoutExecutionName">Workout</span>
+          </div>
+
+          <!-- Header Controls -->
+          <div class="workout-header-controls">
+            <button id="workoutStartBtn" class="workout-btn-header workout-btn-start">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                <polygon points="5,3 19,12 5,21"/>
+              </svg>
+            </button>
+            <button id="workoutPauseBtn" class="workout-btn-header workout-btn-pause hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="6" y="4" width="4" height="16"/>
+                <rect x="14" y="4" width="4" height="16"/>
+              </svg>
+            </button>
+            <button id="workoutReplayBtn" class="workout-btn-header workout-btn-replay hidden">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                <path d="M21 3v5h-5"/>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                <path d="M3 21v-5h5"/>
+              </svg>
+            </button>
+
+            <div class="workout-timer">
+              <span id="workoutTimer">00:00.00</span>
+            </div>
+            <button id="closeWorkoutBtn" class="workout-close-btn">×</button>
+          </div>
+        </div>
+
+        <!-- Main Display Area -->
+        <div class="workout-main">
+          <!-- Shot Title -->
+          <div class="workout-shot-title" id="workoutShotTitle">
+            &nbsp;
+          </div>
+
+          <!-- Shot Progress Meter -->
+          <div class="workout-progress-container">
+            <div class="workout-progress-bar" id="workoutShotProgressBar"></div>
+            <div class="workout-progress-text" id="workoutShotProgressText">Ready</div>
+            
+            <!-- Rocket Mode Timing Tick Marks -->
+            <div id="workoutTimingTicks" class="workout-timing-ticks hidden">
+              <div class="timing-tick start-tick">
+                <div class="tick-line"></div>
+                <div class="tick-label">Start</div>
+                <div class="tick-time">0.0s</div>
+              </div>
+              <div class="timing-tick tts-tick">
+                <div class="tick-line"></div>
+                <div class="tick-label">TTS</div>
+                <div class="tick-time">0.0s</div>
+              </div>
+              <div class="timing-tick split-tick">
+                <div class="tick-line"></div>
+                <div class="tick-label">Split</div>
+                <div class="tick-time">0.0s</div>
+              </div>
+              <div class="timing-tick end-tick">
+                <div class="tick-line"></div>
+                <div class="tick-label">End</div>
+                <div class="tick-time">0.0s</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Secondary Info -->
+          <div class="workout-info">
+            <div class="workout-pattern" id="workoutCurrentPattern">--</div>
+            <div class="workout-shots-counter" id="workoutShotsCounter">0 / 0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Auto-complete Modal -->
+    <div id="autoCompleteModal" class="modal-overlay hidden">
+      <div
+        class="modal-content max-w-4xl w-full max-h-[80vh] overflow-y-auto"
+      >
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Auto-complete
+        </h3>
+        <div class="form-group">
+          <label for="suggestedShotNames" class="block text-lg font-medium text-gray-700 dark:text-gray-100 mb-3">
+            Suggested shot names:
+          </label>
+          <textarea
+            id="suggestedShotNames"
+            class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 shadow-sm resize-vertical min-h-64 text-base leading-relaxed bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            placeholder="Enter suggested shot names..."
+          >Front Left, Front Right, Mid Left, Mid Right, Back Left, Back Right,
+1L, 1R, 2L, 2R, 3L, 3R, 4L, 4R, 5L, 5R</textarea>
+        </div>
+        <div class="flex justify-end space-x-3 mt-6">
+          <button
+            id="okAutoCompleteBtn"
+            class="px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+            style="background-color: #2563eb !important; color: white !important; border: none !important;"
+            onmouseover="this.style.setProperty('background-color', '#1d4ed8', 'important')"
+            onmouseout="this.style.setProperty('background-color', '#2563eb', 'important')"
+            onfocus="this.style.setProperty('background-color', '#2563eb', 'important')"
+            onblur="this.style.setProperty('background-color', '#2563eb', 'important')"
+          >
+            OK
+          </button>
+          <button
+            id="defaultsAutoCompleteBtn"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
+          >
+            Defaults
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auto-complete Defaults Confirmation Modal -->
+    <div id="autoCompleteDefaultsModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h3
+          class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4"
+        >
+          Reset Auto-complete Settings
+        </h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+          This will reset the suggested shot names to their default values. This action cannot be undone.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button
+            id="autoCompleteDefaultsOkBtn"
+            class="px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+            style="background-color: #2563eb !important; color: white !important; border: none !important;"
+            onmouseover="this.style.setProperty('background-color', '#1d4ed8', 'important')"
+            onmouseout="this.style.setProperty('background-color', '#2563eb', 'important')"
+            onfocus="this.style.setProperty('background-color', '#2563eb', 'important')"
+            onblur="this.style.setProperty('background-color', '#2563eb', 'important')"
+          >
+            OK
+          </button>
+          <button
+            id="autoCompleteDefaultsCancelBtn"
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Propagation Confirmation Modal -->
+    <div id="settingsPropagationModal" class="modal-overlay hidden">
+      <div class="modal-content max-w-lg">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4" id="propagationModalTitle">
+          Setting Change Detected
+        </h3>
+        <div class="mb-4">
+          <p class="text-sm text-gray-600 mb-3" id="propagationModalText">
+            You've changed a setting that affects child elements. Some child elements have customized this setting.
+          </p>
+          <div class="bg-yellow-50 border border-yellow-200 rounded-md p-3 mb-3">
+            <h4 class="text-sm font-medium text-yellow-800 mb-2">Elements with custom settings:</h4>
+            <ul class="text-xs text-yellow-700 space-y-1" id="propagationConflictList">
+              <!-- Conflicting elements will be populated here -->
+            </ul>
+          </div>
+          <p class="text-xs text-gray-500">
+            Choose whether to override these custom settings or keep them unchanged.
+          </p>
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button
+            id="propagationCancelBtn"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+          >
+            Cancel Change
+          </button>
+          <button
+            id="propagationKeepCustomBtn"
+            class="px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md"
+          >
+            Keep Custom Settings
+          </button>
+          <button
+            id="propagationOverrideBtn"
+            class="px-4 py-2 text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 rounded-md"
+          >
+            Override All
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favorites Save Confirmation Modal -->
+    <div id="favoritesSaveModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Update Favorite?</h3>
+        <p id="favoritesSaveModalMessage" class="text-sm text-gray-600 mb-6 text-center">
+          This will update the existing favorite. If you don't want to update, rename the workout first and try again.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button id="favoritesSaveModalCancelBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">Cancel</button>
+          <button id="favoritesSaveModalOverwriteBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal-overlay hidden">
+      <div class="modal-content max-w-lg">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">About Squash Ghoster</h3>
+        <div class="space-y-4">
+          <div>
+            <h4 class="font-medium text-gray-800 mb-2">Build Information</h4>
+            <div class="bg-gray-50 p-3 rounded-md">
+              <div class="text-sm text-gray-700">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="font-medium">Build ID:</span>
+                  <span id="aboutBuildId" class="font-mono text-gray-600"></span>
+                </div>
+                <div class="flex justify-between items-center mb-1">
+                  <span class="font-medium">Build Date:</span>
+                  <span id="aboutBuildDate" class="font-mono text-gray-600"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="font-medium">Version:</span>
+                  <span class="font-mono text-gray-600">0.9.0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-gray-800 mb-2">Description</h4>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              Squash Ghoster is a comprehensive workout planning and execution tool designed specifically for squash players. 
+              Create custom ghosting routines, manage intervals, and track your training progress with an intuitive interface.
+            </p>
+          </div>
+          
+          <div>
+            <h4 class="font-medium text-gray-800 mb-2">Features</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Custom workout creation and management</li>
+              <li>• Interval timing with voice announcements</li>
+              <li>• Pattern-based workout structures</li>
+              <li>• Responsive design for all devices</li>
+              <li>• Dark/light theme support</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="flex justify-end mt-6">
+          <button id="aboutModalCloseBtn" class="px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2" style="background-color: #2563eb !important; color: white !important; border: none !important;"
+            onmouseover="this.style.setProperty('background-color', '#1d4ed8', 'important')"
+            onmouseout="this.style.setProperty('background-color', '#2563eb', 'important')"
+            onfocus="this.style.setProperty('background-color', '#2563eb', 'important')"
+            onblur="this.style.setProperty('background-color', '#2563eb', 'important')"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

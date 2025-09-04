@@ -1,0 +1,200 @@
+{
+  "type": "Workout",
+  "name": "My Squash Workout",
+  "config": {
+    "iterationType": "in-order",
+    "limits": {
+      "type": "time-limit",
+      "value": "40:00"
+    },
+    "voice": "Default",
+    "speechRate": 1,
+    "interval": 5,
+    "intervalOffset": {
+      "min": 0,
+      "max": 0
+    },
+    "autoVoiceSplitStep": true,
+    "shotAnnouncementLeadTime": 2.5,
+    "splitStepSpeed": "auto-scale"
+  },
+  "patterns": [
+    {
+      "type": "Pattern",
+      "id": "pattern_001",
+      "name": "Diagonal Left",
+      "positionType": "normal",
+      "config": {
+        "iterationType": "in-order",
+        "limits": {
+          "type": "shot-limit",
+          "value": 20
+        }
+      },
+      "entries": [
+        {
+          "type": "Shot",
+          "id": "shot_001",
+          "name": "5L Drive",
+          "positionType": "normal",
+          "config": {
+            "repeatCount": {
+              "type": "random",
+              "min": 2,
+              "max": 4
+            },
+            "interval": 4.3
+          }
+        },
+        {
+          "type": "Shot",
+          "id": "shot_002",
+          "name": "3L Boast",
+          "positionType": "linked",
+          "config": {
+            "interval": 4,
+            "repeatCount": {
+              "min": 0,
+              "max": 1,
+              "type": "random"
+            }
+          }
+        },
+        {
+          "type": "Shot",
+          "id": "shot_1755181259358_thiuxi",
+          "name": "1R Drop",
+          "positionType": "linked",
+          "config": {
+            "repeatCount": {
+              "type": "random",
+              "min": 1,
+              "max": 3
+            },
+            "interval": 3.8
+          }
+        },
+        {
+          "type": "Shot",
+          "id": "shot_1755181995598_nxh2f5",
+          "name": "1R Drive",
+          "positionType": "linked",
+          "config": {
+            "interval": 4.3,
+            "repeatCount": {
+              "type": "random",
+              "min": 0,
+              "max": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "Pattern",
+      "id": "shot_1755182803382_alp4b2",
+      "name": "Rest",
+      "positionType": "linked",
+      "config": {},
+      "entries": [
+        {
+          "type": "Message",
+          "id": "shot_1755182672379_5uwit5",
+          "name": "Rest",
+          "positionType": "normal",
+          "config": {
+            "interval": "1:00",
+            "countdown": true,
+            "message": "Rest"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Pattern",
+      "id": "pattern_1755182535961_81x5ys",
+      "name": "Diagonal Right",
+      "positionType": "normal",
+      "config": {
+        "iterationType": "in-order",
+        "limits": {
+          "type": "shot-limit",
+          "value": 20
+        }
+      },
+      "entries": [
+        {
+          "type": "Shot",
+          "id": "shot_1755182535961_u2fb6d",
+          "name": "5R Drive",
+          "positionType": "normal",
+          "config": {
+            "repeatCount": {
+              "type": "random",
+              "min": 2,
+              "max": 4
+            },
+            "interval": 4.3
+          }
+        },
+        {
+          "type": "Shot",
+          "id": "shot_1755182535961_8xaf7b",
+          "name": "3R Boast",
+          "positionType": "linked",
+          "config": {
+            "interval": 4,
+            "repeatCount": {
+              "type": "random",
+              "min": 0,
+              "max": 1
+            }
+          }
+        },
+        {
+          "type": "Shot",
+          "id": "shot_1755182535961_5jhdjt",
+          "name": "1L Drop",
+          "positionType": "linked",
+          "config": {
+            "repeatCount": {
+              "type": "random",
+              "min": 1,
+              "max": 3
+            },
+            "interval": 3.8
+          }
+        },
+        {
+          "type": "Shot",
+          "id": "shot_1755182535961_onsag0",
+          "name": "5L Drive",
+          "positionType": "linked",
+          "config": {
+            "interval": 4.3
+          }
+        }
+      ]
+    },
+    {
+      "type": "Pattern",
+      "id": "pattern_1755182822066_v23l6t",
+      "name": "Rest",
+      "positionType": "linked",
+      "config": {},
+      "entries": [
+        {
+          "type": "Message",
+          "id": "message_1755182822066_42o4if",
+          "name": "Rest",
+          "positionType": "normal",
+          "config": {
+            "interval": "1:00",
+            "countdown": true,
+            "message": "Rest"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "config": {
+    "autoVoiceSplitStep": true,
+    "interval": 5.0,
+    "intervalOffset": {
+      "max": 0.0,
+      "min": 0.0
+    },
+    "intervalOffsetType": "fixed",
+    "iterationType": "in-order",
+    "limits": {
+      "type": "all-shots",
+      "value": null
+    },
+    "shotAnnouncementLeadTime": 2.5,
+    "speechRate": 1.0,
+    "splitStepSpeed": "auto-scale",
+    "voice": "Default"
+  },
+  "name": "My Squash Workout",
+  "patterns": [
+    {
+      "config": {
+        "iterationType": "shuffle",
+        "repeatCount": 5
+      },
+      "entries": [
+        {
+          "id": "shotInstance_1",
+          "name": "Front left",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shotInstance_2",
+          "name": "Front right",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shotInstance_3",
+          "name": "Mid left",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shotInstance_4",
+          "name": "Mid right",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shotInstance_5",
+          "name": "Back left",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shotInstance_6",
+          "name": "Back right",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "00:30",
+            "intervalType": "fixed",
+            "message": "Rest",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msgInstance_9",
+          "name": "Rest",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "patternInstance_1",
+      "name": "Six points",
+      "positionType": "normal",
+      "type": "Pattern"
+    }
+  ],
+  "type": "Workout"
+}

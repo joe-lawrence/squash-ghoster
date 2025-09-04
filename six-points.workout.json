@@ -1,0 +1,81 @@
+{
+  "type": "Workout",
+  "name": "Six-Point Pattern",
+  "config": {
+    "iterationType": "in-order",
+    "limits": {
+      "type": "all-shots",
+      "value": null
+    },
+    "interval": 5,
+    "intervalOffsetType": "fixed",
+    "intervalOffset": {
+      "min": 0,
+      "max": 0
+    },
+    "autoVoiceSplitStep": true,
+    "shotAnnouncementLeadTime": 2,
+    "splitStepSpeed": "auto-scale"
+  },
+  "patterns": [
+    {
+      "type": "Pattern",
+      "id": "six_point_pattern_3_0_cycle",
+      "name": "Six-Point Drill Cycle",
+      "positionType": "normal",
+      "config": {
+        "iterationType": "in-order",
+        "limits": {
+          "type": "all-shots",
+          "value": null
+        },
+        "repeatCount": 5
+      },
+      "entries": [
+        {
+          "type": "Shot",
+          "id": "fl_01",
+          "name": "Front Left"
+        },
+        {
+          "type": "Shot",
+          "id": "fr_02",
+          "name": "Front Right"
+        },
+        {
+          "type": "Shot",
+          "id": "ml_03",
+          "name": "Mid Left"
+        },
+        {
+          "type": "Shot",
+          "id": "mr_04",
+          "name": "Mid Right"
+        },
+        {
+          "type": "Shot",
+          "id": "bl_05",
+          "name": "Back Left"
+        },
+        {
+          "type": "Shot",
+          "id": "br_06",
+          "name": "Back Right"
+        },
+        {
+          "type": "Message",
+          "id": "rest_30s_in_cycle",
+          "name": "Rest Period",
+          "positionType": "linked",
+          "config": {
+            "message": "Take a break",
+            "interval": "00:30",
+            "skipAtEndOfWorkout": true,
+            "intervalType": "fixed",
+            "countdown": true
+          }
+        }
+      ]
+    }
+  ]
+}

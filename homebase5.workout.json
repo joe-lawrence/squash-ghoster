@@ -1,0 +1,1794 @@
+{
+  "config": {
+    "autoVoiceSplitStep": true,
+    "interval": 4.4,
+    "intervalOffset": {
+      "max": 0.5,
+      "min": -0.5
+    },
+    "intervalOffsetType": "random",
+    "iterationType": "shuffle",
+    "limits": {
+      "type": "time-limit",
+      "value": "40:00"
+    },
+    "shotAnnouncementLeadTime": 2.5,
+    "speechRate": 1.0,
+    "splitStepSpeed": "auto-scale",
+    "voice": "Default"
+  },
+  "name": "Homebase5",
+  "patterns": [
+    {
+      "entries": [
+        {
+          "id": "shot_181f31b0",
+          "name": "1L",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_a4fe6442",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_416b18f0",
+          "name": "1L",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_2e7eb8a5",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_a625942b",
+          "name": "1L",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_c6e9ed5f",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_3f9e11de",
+          "name": "1L",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_80547989",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_e4c030e2",
+          "name": "1L",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_2c60ebc0",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_9e59f269",
+          "name": "1L",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_37129285",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_53f314f8",
+          "name": "1L",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_eed328ac",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_864772f5",
+          "name": "1L",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_f9248e2d",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_e86b2520",
+          "name": "1L",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_64b6433e",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_50fbd5d8",
+          "name": "1L",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_ae470405",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_d341c7f9",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_e26899dd",
+      "name": "Homebase at 1L",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "id": "shot_7b753c32",
+          "name": "1R",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_9fae2f7f",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_1b1eacd7",
+          "name": "1R",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_607ba61b",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_fb865def",
+          "name": "1R",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_9a19f3dc",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_5c231eb9",
+          "name": "1R",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_372b66e6",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_8c944c9c",
+          "name": "1R",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_4bf48707",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_f8316efd",
+          "name": "1R",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_06b52521",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_ca856c47",
+          "name": "1R",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_69932148",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_21828e2e",
+          "name": "1R",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_57c7e786",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_a70c9db8",
+          "name": "1R",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_460b656b",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_c5c1f474",
+          "name": "1R",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_73786176",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_5461d5e0",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_43b9b3ea",
+      "name": "Homebase at 1R",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_3a8353f6",
+          "name": "2L",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_c4a969f6",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_20c416c4",
+          "name": "2L",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_54372e73",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_56957910",
+          "name": "2L",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_8bbb5628",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_5e6fc085",
+          "name": "2L",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_47f36868",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_80a65529",
+          "name": "2L",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_b2bbcc60",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_cdf678f8",
+          "name": "2L",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_322d9442",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_14b71056",
+          "name": "2L",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_7e036b76",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_6ffaf007",
+          "name": "2L",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_adbaa199",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_866fd27d",
+          "name": "2L",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_59755d07",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_b9063eec",
+          "name": "2L",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_8676642f",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_6c99b774",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_1695e19c",
+      "name": "Homebase at 2L",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_46f707c7",
+          "name": "2R",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_25643a8f",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_a293c21c",
+          "name": "2R",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_2579080e",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_2aa8f39b",
+          "name": "2R",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_3ad8570b",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_fa0131c0",
+          "name": "2R",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_69faa197",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_78f514c4",
+          "name": "2R",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_e26d22a2",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_01df2bbd",
+          "name": "2R",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_34c452ca",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_bc6a6d5d",
+          "name": "2R",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_f3f2ca98",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_f733e3d8",
+          "name": "2R",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_f4677faf",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_96c066ae",
+          "name": "2R",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_31a91e46",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_200e4cfc",
+          "name": "2R",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_b7e5750d",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_add36a38",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_2857fc09",
+      "name": "Homebase at 2R",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_2803a7a3",
+          "name": "3L",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_6a1c27e9",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_bc04b75a",
+          "name": "3L",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_68d59583",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_700c309a",
+          "name": "3L",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_422a5699",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_2e06fd2c",
+          "name": "3L",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_64824ccc",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_d173995e",
+          "name": "3L",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_aa959bba",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_8879c8ac",
+          "name": "3L",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_a4e16811",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_994fe981",
+          "name": "3L",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_6c8a64ae",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_5aa642e4",
+          "name": "3L",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_fe919ad0",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_bead7891",
+          "name": "3L",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_4a619468",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_71ac4e49",
+          "name": "3L",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_ab3a4148",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_a913dfa0",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_c153df72",
+      "name": "Homebase at 3L",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_eb85305f",
+          "name": "3R",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_277a24a0",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_92f7b595",
+          "name": "3R",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_f71dc0c3",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_013d54a1",
+          "name": "3R",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_b129d082",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_48ff05aa",
+          "name": "3R",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_810f5d8c",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_369b698a",
+          "name": "3R",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_900dec32",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_6f185e1c",
+          "name": "3R",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_034a0c95",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_2f687cb2",
+          "name": "3R",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_e9059f42",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_f7501f87",
+          "name": "3R",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_3f232505",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_546c2657",
+          "name": "3R",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_fe68aa03",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_dfd1195b",
+          "name": "3R",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_ed5bdf72",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_1343967c",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_b323dbd1",
+      "name": "Homebase at 3R",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_f7fb26d3",
+          "name": "4L",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_aad5a8bc",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_f7d4a509",
+          "name": "4L",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_e4669508",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_c9e33edb",
+          "name": "4L",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_661ce1f3",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_d12442f1",
+          "name": "4L",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_f50b7b11",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_3e17a8ec",
+          "name": "4L",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_4ff86e1f",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_56a71fcd",
+          "name": "4L",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_383fd5ea",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_41576e07",
+          "name": "4L",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_6a4a94bd",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_96791766",
+          "name": "4L",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_4732b3b5",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_e7604eca",
+          "name": "4L",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_b8b5cb24",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_918e1fed",
+          "name": "4L",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_01c59baa",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_46b75beb",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_eeb24dd4",
+      "name": "Homebase at 4L",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_1841da90",
+          "name": "4R",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_4efc5946",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_a1cb1139",
+          "name": "4R",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_29f1c6f5",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_caf40360",
+          "name": "4R",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_34885ab5",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_c67f6b11",
+          "name": "4R",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_7e66bb35",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_83586048",
+          "name": "4R",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_e6efedc0",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_6d31ef14",
+          "name": "4R",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_537afeaa",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_88c8866b",
+          "name": "4R",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_40b2a5dd",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_372924a4",
+          "name": "4R",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_1f8f2ec7",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_335a708a",
+          "name": "4R",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_90493260",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_899e9837",
+          "name": "4R",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_6a1b85e8",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_83bf2dca",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_b1bf3773",
+      "name": "Homebase at 4R",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "id": "shot_343065cf",
+          "name": "5L",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_dda80fa6",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_06e668ba",
+          "name": "5L",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_1b4713fd",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_190f6929",
+          "name": "5L",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_1a1357c4",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_dd5e1906",
+          "name": "5L",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_6b95e37c",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_857463c7",
+          "name": "5L",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_f62ed961",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_f1c021dd",
+          "name": "5L",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_88148f1c",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_2a3fa3e1",
+          "name": "5L",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_85cc7906",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_d51da6d1",
+          "name": "5L",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_fcd669e0",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_aa753152",
+          "name": "5L",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_5c680109",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_1126a7b0",
+          "name": "5L",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_5cf544bc",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_6a2b4a24",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_5a215555",
+      "name": "Homebase at 5L",
+      "positionType": "normal",
+      "type": "Pattern"
+    },
+    {
+      "entries": [
+        {
+          "id": "shot_33a000c9",
+          "name": "5R",
+          "positionType": "1",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_50bb2ceb",
+          "name": "1L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_0b26d14a",
+          "name": "5R",
+          "positionType": "3",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_b024bc9d",
+          "name": "1R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_7240c1f0",
+          "name": "5R",
+          "positionType": "5",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_ed0adb24",
+          "name": "2L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_f4cc7ef4",
+          "name": "5R",
+          "positionType": "7",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_88ef47b0",
+          "name": "2R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_96371048",
+          "name": "5R",
+          "positionType": "9",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_127af540",
+          "name": "3L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_41f167a8",
+          "name": "5R",
+          "positionType": "11",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.2
+          },
+          "id": "shot_19a430cb",
+          "name": "3R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_1e221f1c",
+          "name": "5R",
+          "positionType": "13",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_46b680f2",
+          "name": "4L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_ab3a5930",
+          "name": "5R",
+          "positionType": "15",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "interval": 4.3
+          },
+          "id": "shot_1085101a",
+          "name": "4R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_cf9d18d2",
+          "name": "5R",
+          "positionType": "17",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_b7da29ef",
+          "name": "5L",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_673ce271",
+          "name": "5R",
+          "positionType": "19",
+          "type": "Shot"
+        },
+        {
+          "id": "shot_8ed72b77",
+          "name": "5R",
+          "positionType": "normal",
+          "type": "Shot"
+        },
+        {
+          "config": {
+            "countdown": true,
+            "interval": "01:00",
+            "intervalType": "fixed",
+            "message": "Take a break",
+            "skipAtEndOfWorkout": true
+          },
+          "id": "msg_ff5904cf",
+          "name": "Rest Period",
+          "positionType": "last",
+          "type": "Message"
+        }
+      ],
+      "id": "pattern_81b726bc",
+      "name": "Homebase at 5R",
+      "positionType": "normal",
+      "type": "Pattern"
+    }
+  ],
+  "type": "Workout"
+}

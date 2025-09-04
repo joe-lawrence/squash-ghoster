@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squash Ghoster - Quick Start Guide</title>
+    <script src="tailwindcss.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Typography System */
+        :root {
+            --base-font-size: 16px;
+            --line-height-base: 1.6;
+            --rhythm-unit: calc(var(--base-font-size) * var(--line-height-base));
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            font-size: var(--base-font-size);
+            line-height: var(--line-height-base);
+            color: #374151;
+        }
+        
+        /* Typography Scale */
+        .text-display { font-size: 2.5rem; line-height: 1.2; font-weight: 700; }
+        .text-heading-1 { font-size: 2rem; line-height: 1.3; font-weight: 600; }
+        .text-heading-2 { font-size: 1.5rem; line-height: 1.4; font-weight: 600; }
+        .text-heading-3 { font-size: 1.25rem; line-height: 1.4; font-weight: 500; }
+        .text-body { font-size: 1rem; line-height: 1.6; }
+        .text-small { font-size: 0.875rem; line-height: 1.5; }
+        
+        /* Spacing System */
+        .space-section { margin-bottom: 3rem; }
+        .space-card { margin-bottom: 2rem; }
+        .space-element { margin-bottom: 1.5rem; }
+        .space-small { margin-bottom: 1rem; }
+        
+        /* Layout */
+        .container {
+            max-width: 65ch;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 3rem 2rem;
+            }
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        @media (max-width: 767px) {
+            .card {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Screenshots */
+        .screenshot {
+            margin: 2rem 0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .screenshot img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Navigation */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #3b82f6;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        /* Lists */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1rem;
+            text-align: center;
+        }
+        
+        /* Steps */
+        .steps {
+            counter-reset: step-counter;
+        }
+        
+        .step {
+            counter-increment: step-counter;
+            margin-bottom: 1.5rem;
+            padding-left: 3rem;
+            position: relative;
+        }
+        
+        .step::before {
+            content: counter(step-counter);
+            background: #3b82f6;
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            position: absolute;
+            left: 0;
+            top: 0;
+            line-height: 1;
+        }
+        
+        /* Pro tip */
+        .pro-tip {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .pro-tip h4 {
+            color: #1e40af;
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+        
+        .pro-tip p {
+            color: #1e3a8a;
+            margin: 0;
+        }
+        
+        /* Back button styling */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #2563eb;
+            color: white;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        
+        .back-button:hover {
+            background-color: #1d4ed8;
+            color: white;
+            text-decoration: none;
+        }
+        
+
+
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            .text-display { font-size: 2rem; }
+            .text-heading-1 { font-size: 1.75rem; }
+            .text-heading-2 { font-size: 1.375rem; }
+            .space-section { margin-bottom: 2rem; }
+            .space-card { margin-bottom: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container">
+        <!-- Back Link -->
+        <div style="margin-bottom: 1.5rem;">
+            <a href="../" class="back-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Squash Ghoster
+            </a>
+        </div>
+
+        <!-- Header -->
+        <header class="text-center space-section">
+            <h1 class="text-display text-gray-900 space-small">Squash Ghoster</h1>
+            <h2 class="text-heading-1 text-gray-600 space-small">Quick Start Guide</h2>
+            <p class="text-body text-gray-700">
+                Learn the basics of using the Squash Ghoster tool to create, preview, and run squash workouts.
+            </p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="card space-card">
+            <h3 class="text-heading-3 text-gray-900 space-small">Section Links</h3>
+            <div class="nav-grid">
+                <a href="#getting-started" class="nav-link">Getting Started</a>
+                <a href="#main-menu" class="nav-link">Main Menu</a>
+                <a href="#floating-toolbar" class="nav-link">Floating Toolbar</a>
+                <a href="#preview-mode" class="nav-link">Preview Mode</a>
+                <a href="#presentation-mode" class="nav-link">Presentation Mode</a>
+                <a href="#load-save" class="nav-link">Load & Save</a>
+            </div>
+        </nav>
+
+        <!-- Getting Started -->
+        <section id="getting-started" class="card space-card">
+            <h2 class="text-heading-2 text-gray-900 space-small">Getting Started</h2>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    The Squash Ghoster tool is designed to help you create structured, timed workouts for squash training. 
+                    Whether you're a coach looking to create drills for your players or a player wanting to practice specific shot patterns, 
+                    this tool provides the flexibility to design workouts that match your training goals.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    The application works by allowing you to define shot patterns, set timing intervals, and configure audio cues that 
+                    will guide you through your workout. You can create simple repetitive drills or complex multi-pattern sequences 
+                    with varying difficulty levels and timing requirements.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">Workout Structure</h3>
+                <p class="text-body text-gray-700">
+                    Squash Ghoster organizes workouts using a hierarchical structure: <strong>Workout → Pattern → Shot/Message</strong>. 
+                    A workout contains one or more patterns, each pattern contains multiple shots and messages, and each shot or message 
+                    has its own timing and audio settings. This structure allows you to create complex training routines by combining 
+                    simple building blocks.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">Shot Sequence Timing</h3>
+                <p class="text-body text-gray-700">
+                    Each shot in a workout follows a timing sequence designed to facilitate ghosting practice. The sequence includes 
+                    narration (with lead time for recognition), a split-step cue, and a final shot sound. This structured timing helps you 
+                    develop consistent movement patterns, footwork, and shot preparation techniques essential for effective ghosting training.
+                </p>
+                
+                <div class="pro-tip">
+                    <h4>Example Shot Cycle Timeline (4.0 seconds)</h4>
+                    <p>
+                        <strong>0.0s:</strong> Shot period begins<br>
+                        <strong>1.5s:</strong> Narration begins (2.5s ahead of shot)<br>
+                        <strong>3.7s:</strong> Split step sound plays<br>
+                        <strong>4.0s:</strong> Shot sound plays & period ends
+                    </p>
+                </div>
+            </div>
+            
+            <div class="steps space-element">
+                <div class="step">
+                    <div>
+                        <h4 class="text-heading-3 text-gray-900 space-small">Open the Application</h4>
+                        <p class="text-body text-gray-700">Navigate to the main application page to begin creating your squash workout. The interface will load with a default workout configuration that you can modify or replace entirely.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div>
+                        <h4 class="text-heading-3 text-gray-900 space-small">Load a Sample Workout</h4>
+                        <p class="text-body text-gray-700">Start by loading one of the included sample workouts to see how the system works. These examples demonstrate different approaches to workout design and will help you understand the various features available.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div>
+                        <h4 class="text-heading-3 text-gray-900 space-small">Explore the Interface</h4>
+                        <p class="text-body text-gray-700">Familiarize yourself with the floating toolbar and main interface elements. The toolbar provides quick access to all major functions, while the main area shows your current workout configuration.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Menu Mode -->
+        <section id="main-menu" class="card space-card">
+            <h2 class="text-heading-2 text-gray-900 space-small">Main Menu Mode</h2>
+            
+            <div class="screenshot space-element">
+                <img src="images/main-menu-mode.png" alt="Main menu interface showing workout configuration options">
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    The main menu mode is your primary workspace for configuring squash workouts. This is where you'll spend most of your time setting up patterns, shots, and timing. 
+                    The interface is designed to be intuitive while providing powerful customization options for creating workouts that match your specific training needs.
+                </p>
+            </div>
+
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    In this mode, you can define the structure of your workout by creating patterns that contain specific shot sequences. Each pattern can be repeated multiple times, 
+                    shuffled for variety, or combined with other patterns to create complex training routines. The system supports both simple repetitive drills and sophisticated 
+                    multi-pattern workouts with varying timing and difficulty levels.
+                </p>
+            </div>
+
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">Key Features</h3>
+                <ul class="feature-list">
+                    <li><strong>Workout Configuration:</strong> Set up patterns, shots, and timing intervals with precise control over each element</li>
+                    <li><strong>Pattern Management:</strong> Create and organize shot patterns with repeats, shuffling, and conditional logic</li>
+                    <li><strong>Timing Controls:</strong> Configure shot intervals, prep times, and message timing for optimal training flow</li>
+                    <li><strong>Audio Settings:</strong> Set up text-to-speech voices, audio ducking, and sound effect preferences</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Floating Toolbar -->
+        <section id="floating-toolbar" class="card space-card">
+            <h2 class="text-heading-2 text-gray-900 space-small">The Floating Toolbar</h2>
+            
+            <div class="screenshot space-element">
+                <img src="images/floating-toolbar.png" alt="Floating toolbar showing all available buttons and dropdown menus">
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    The floating toolbar is your command center, providing quick access to all major functions. It's positioned in the top-left corner and is collapsed by default to keep your workspace clean. 
+                    The gear icon is always visible, and selecting it will expand the toolbar as depicted in the screenshot above.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    The toolbar is designed to be unobtrusive while remaining easily accessible. It automatically hides when you click outside of it, but you can bring it back by clicking the gear icon or using 
+                    keyboard shortcuts for power users.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    Each button in the toolbar opens a dropdown menu with related functions, allowing you to quickly perform common tasks like loading workouts, saving your progress, 
+                    or starting a workout session.
+                </p>
+            </div>
+
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">Toolbar Buttons</h3>
+            
+                <ul class="feature-list">
+                    <li><strong>Editor:</strong> Access the advanced workout editor for detailed configuration</li>
+                    <li><strong>Execute:</strong> Run, preview, or set prep time for your workouts</li>
+                    <li><strong>Load:</strong> Load workout from file or clipboard</li>
+                    <li><strong>Save:</strong> Save workout to file or clipboard</li>
+                    <li><strong>Favorites:</strong> Manage favorite workouts for quick access</li>
+                    <li><strong>Audio Ducking:</strong> Toggle audio ducking mode to manually keep the Text To Speech engine active, preventing the OS from constantly adjusting system sound levels up/down during a workout</li>
+                    <li><strong>Rocket Surgery Mode:</strong> Enable advanced features for power users</li>
+                    <li><strong>Theme:</strong> Select light or dark color schemes</li>
+                    <li><strong>Help:</strong> Access documentation and support resources</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Preview Mode -->
+        <section id="preview-mode" class="card space-card">
+            <h2 class="text-heading-2 text-gray-900 space-small">Preview Mode</h2>
+            
+            <div class="screenshot space-element">
+                <img src="images/preview-mode.png" alt="Preview mode interface showing workout timeline and playback controls">
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    Preview mode lets you see exactly how your workout will play out before you run it. It shows the complete timeline with all shots, messages, and timing, 
+                    giving you the opportunity to review and adjust your workout configuration before committing to a full training session. This is particularly useful for 
+                    complex workouts with multiple patterns or when you want to verify timing calculations.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    The preview interface provides a comprehensive overview of your workout, including total duration, shot counts, and pattern breakdowns. You can play through 
+                    the entire timeline to hear how the audio cues will sound, check timing accuracy, and identify any potential issues with your workout design. This helps 
+                    ensure that your training session will flow smoothly and meet your intended training objectives.
+                </p>
+            </div>
+
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">How to Access Preview</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div>
+                            <p class="text-body text-gray-700">Click the <strong>Execute</strong> button in the floating toolbar</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div>
+                            <p class="text-body text-gray-700">Select <strong>Preview</strong> from the dropdown menu</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div>
+                            <p class="text-body text-gray-700">The preview modal will open showing your workout timeline</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">Preview Features</h3>
+                <ul class="feature-list">
+                    <li><strong>Timeline Playback:</strong> Play through the workout timeline to hear audio cues and verify timing accuracy</li>
+                    <li><strong>Time Navigation:</strong> Jump to any point in the workout timeline for quick review of specific sections</li>
+                    <li><strong>Workout Summary:</strong> See total duration, shot count, and pattern breakdown for planning purposes</li>
+                    <li><strong>Presentation Mode:</strong> Jump directly to presentation mode from any point in the timeline</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Presentation Mode -->
+        <section id="presentation-mode" class="card space-card">
+            <h2 class="text-heading-2 text-gray-900 space-small">Presentation Mode</h2>
+            
+            <div class="screenshot space-element">
+                <img src="images/presentation-mode.png" alt="Presentation mode showing full-screen workout interface with progress bar and ghost indicator">
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    Presentation mode is the full-screen workout execution interface. This is where you'll actually run your squash workout with audio cues and visual feedback. 
+                    The interface is designed to be distraction-free, allowing you to focus entirely on your training while receiving clear guidance through audio announcements 
+                    and visual progress indicators.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    When you enter presentation mode, the application transforms into a dedicated training environment. The interface displays your current shot, progress through 
+                    the workout, and provides real-time feedback on your performance. The system is designed to work seamlessly with your training routine, whether you're 
+                    practicing alone or with a coach providing additional guidance.
+                </p>
+            </div>
+
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">How to Access Presentation Mode</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div>
+                            <p class="text-body text-gray-700">Click the <strong>Execute</strong> button in the floating toolbar</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div>
+                            <p class="text-body text-gray-700">Select <strong>Run</strong> from the dropdown menu</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div>
+                            <p class="text-body text-gray-700">Or use the <strong>Present</strong> button in preview mode to jump to a specific time</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">Presentation Mode Controls</h3>
+                <p class="text-body text-gray-700">
+                    Once in presentation mode, use the <strong>Present button</strong> in the top right to begin or pause the workout. 
+                    The <strong>Close button</strong> (also in the top right) will return you to the main configuration mode.
+                </p>
+            </div>
+
+            <div class="space-element">
+                <h3 class="text-heading-3 text-gray-900 space-small">Presentation Mode Features</h3>
+                <ul class="feature-list">
+                    <li><strong>Audio Cues:</strong> Text-to-speech announcements for each shot and message with customizable voice settings</li>
+                    <li><strong>Progress Tracking:</strong> Visual progress bar and shot counter to monitor your advancement through the workout</li>
+                    <li><strong>Playback Controls:</strong> Pause, resume, and skip functionality for flexible training sessions</li>
+                    <li><strong>Visual Feedback:</strong> Animated ghost indicator showing workout status and providing visual motivation</li>
+                    <li><strong>Rocket Mode:</strong> Advanced timing visualization with tick marks for precise timing control</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Load and Save -->
+        <section id="load-save" class="card space-card">
+            <h2 class="text-heading-2 text-gray-900 space-small">Loading and Saving Workouts</h2>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    The application supports multiple ways to load and save your workout configurations. You can work with files, clipboard, and favorites, 
+                    making it easy to share workouts with others, backup your configurations, or quickly switch between different training routines. 
+                    The system includes built-in validation to ensure that loaded workouts are properly formatted and will work correctly.
+                </p>
+            </div>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    All workout data is stored in JSON format, which is both human-readable and easily shareable. This means you can edit workout files 
+                    in any text editor if needed, or share them with other players and coaches. The application will automatically validate any loaded 
+                    workout to ensure it contains all required elements and follows the proper structure.
+                </p>
+            </div>
+
+            <div class="space-element">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-heading-3 text-gray-900 space-small">Loading Workouts</h3>
+                        
+                        <div style="padding-left: 1.5rem;">
+                            <h4 class="text-heading-3 text-gray-900 space-small">From File</h4>
+                            <div class="steps space-small">
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Click the <strong>Load</strong> button in the toolbar</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Select <strong>Load from File</strong></p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Choose a .json workout file</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">The workout will be validated and loaded</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h4 class="text-heading-3 text-gray-900 space-small">From Clipboard</h4>
+                            <div class="steps">
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Click the <strong>Load</strong> button in the toolbar</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Select <strong>Paste from Clipboard</strong></p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">The workout JSON will be parsed and loaded</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-heading-3 text-gray-900 space-small">Saving Workouts</h3>
+                        
+                        <div style="padding-left: 1.5rem;">
+                            <h4 class="text-heading-3 text-gray-900 space-small">To File</h4>
+                            <div class="steps space-small">
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Click the <strong>Save</strong> button in the toolbar</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Select <strong>Save to File</strong></p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Choose a location and filename</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">The workout will be saved as a .json file</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h4 class="text-heading-3 text-gray-900 space-small">To Clipboard</h4>
+                            <div class="steps">
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Click the <strong>Save</strong> button in the toolbar</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">Select <strong>Copy to Clipboard</strong></p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div>
+                                        <p class="text-body text-gray-700">The workout JSON will be copied to your clipboard</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pro-tip">
+                <h4>Pro Tip</h4>
+                <p>
+                    Use the clipboard features to quickly share workouts with others or backup your configurations. 
+                    The JSON format is human-readable and can be easily edited in any text editor. This makes it easy to 
+                    create variations of existing workouts or troubleshoot any issues with your workout configuration.
+                </p>
+            </div>
+        </section>
+
+
+
+        <!-- Next Steps -->
+        <section class="card space-card">
+            <h2 class="text-heading-2 text-gray-900 space-small">Next Steps</h2>
+            
+            <div class="space-element">
+                <p class="text-body text-gray-700">
+                    Now that you understand the basics of the Squash Ghoster tool, you're ready to start creating and running your own workouts. 
+                    The following steps will help you progress from a beginner to an advanced user, gradually exploring all the features and capabilities 
+                    that the system has to offer.
+                </p>
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <div>
+                        <h4 class="text-heading-3 text-gray-900 space-small">Try a Sample Workout</h4>
+                        <p class="text-body text-gray-700">Load one of the included sample workouts and run it in presentation mode to see how everything works. This will give you a feel for the timing and audio cues before you start creating your own workouts.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div>
+                        <h4 class="text-heading-3 text-gray-900 space-small">Create Your First Workout</h4>
+                        <p class="text-body text-gray-700">Start with the default workout and modify it to create your own custom patterns and timing. Begin with simple changes like adjusting shot intervals or adding new shots to existing patterns.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div>
+                        <h4 class="text-heading-3 text-gray-900 space-small">Explore Advanced Features</h4>
+                        <p class="text-body text-gray-700">Try the editor mode, experiment with audio ducking, and explore rocket mode for advanced timing visualization. These features will help you create more sophisticated and effective training routines.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div>
+                        <h4 class="text-heading-3 text-gray-900 space-small">Share Your Workouts</h4>
+                        <p class="text-body text-gray-700">Save your creations and share them with other players using the clipboard or file export features. This allows you to build a library of workouts and collaborate with other players and coaches.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Back Link -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="../" class="back-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Squash Ghoster
+            </a>
+        </div>
+
+    </div>
+</body>
+</html>
