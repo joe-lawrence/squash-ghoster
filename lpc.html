@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPC 2025 | Full Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .session-card { transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .session-card:active { transform: scale(0.98); }
+        .session-card:hover { border-color: #6366f1; }
+        
+        /* Tags */
+        .tag-mc { background-color: #e0f2fe; color: #0369a1; } /* Sky Blue */
+        .tag-track { background-color: #fce7f3; color: #be185d; } /* Pink */
+        .tag-social { background-color: #fef08a; color: #854d0e; } /* Yellow */
+        .tag-ref { background-color: #dcfce7; color: #15803d; } /* Green */
+        .tag-bof { background-color: #f3e8ff; color: #7e22ce; } /* Purple */
+        .tag-workshop { background-color: #ffedd5; color: #c2410c; } /* Orange */
+        .tag-break { background-color: #f1f5f9; color: #64748b; } /* Slate */
+
+        /* Sticky Header */
+        .sticky-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Modal Animation */
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+        }
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-12">
+
+    <!-- Header -->
+    <header class="sticky-header sticky top-0 z-50 border-b border-slate-200 shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-bold text-slate-900 leading-tight">LPC 2025</h1>
+                <p class="text-xs text-slate-500 font-medium">Toranomon Hills • Tokyo</p>
+            </div>
+            <div class="text-right">
+                <div id="live-clock" class="text-sm font-bold text-indigo-600">00:00</div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wide">Tokyo (JST)</div>
+            </div>
+        </div>
+        
+        <!-- Day Tabs -->
+        <div class="max-w-3xl mx-auto px-4 pt-1 pb-0">
+            <div class="flex gap-2 border-b border-slate-200">
+                <button onclick="switchDay('2025-12-11')" id="tab-2025-12-11" class="day-tab flex-1 pb-3 text-sm font-semibold text-slate-500 border-b-2 border-transparent hover:text-indigo-600 transition-colors">
+                    Thu, Dec 11
+                </button>
+                <button onclick="switchDay('2025-12-12')" id="tab-2025-12-12" class="day-tab flex-1 pb-3 text-sm font-semibold text-indigo-600 border-b-2 border-indigo-600 transition-colors">
+                    Fri, Dec 12
+                </button>
+                <button onclick="switchDay('2025-12-13')" id="tab-2025-12-13" class="day-tab flex-1 pb-3 text-sm font-semibold text-slate-500 border-b-2 border-transparent hover:text-indigo-600 transition-colors">
+                    Sat, Dec 13
+                </button>
+            </div>
+        </div>
+
+        <!-- Search/Filter Bar -->
+        <div class="max-w-3xl mx-auto px-4 py-3 bg-slate-50/80">
+            <div class="relative">
+                <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-lg"></i>
+                <input type="text" id="search-input" placeholder="Filter by topic, speaker, or room..." 
+                    class="w-full bg-white border border-slate-200 rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder-slate-400 shadow-sm">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Schedule Content -->
+    <main class="max-w-3xl mx-auto px-4 py-6 space-y-8 min-h-[60vh]" id="schedule-container">
+        <!-- Content injected by JS -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-slate-400 text-xs py-8 border-t border-slate-100 mt-8">
+        <p>Linux Plumbers Conference 2025</p>
+        <p class="mt-1">Toranomon Hills Mori Tower</p>
+    </footer>
+
+    <!-- Modal for Details -->
+    <div id="modal-overlay" class="modal fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm hidden opacity-0 flex items-center justify-center p-4">
+        <div class="modal-content bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="p-6 overflow-y-auto">
+                <div class="flex justify-between items-start mb-4">
+                    <span id="modal-type" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600">Track</span>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full p-1 transition-colors">
+                        <i class="ph ph-x text-lg"></i>
+                    </button>
+                </div>
+                
+                <h2 id="modal-title" class="text-2xl font-bold text-slate-900 mb-2 leading-tight">Session Title</h2>
+                
+                <div class="flex flex-col gap-2 text-sm text-slate-600 mb-6">
+                    <div class="flex items-center gap-2">
+                        <i class="ph-fill ph-clock text-indigo-500"></i>
+                        <span id="modal-time">10:00 - 11:00</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="ph-fill ph-map-pin text-indigo-500"></i>
+                        <span id="modal-room">Room Name</span>
+                    </div>
+                </div>
+
+                <div class="prose prose-sm prose-slate mb-6">
+                    <h3 class="text-sm font-bold text-slate-900 mb-2">Description / Topics</h3>
+                    <div id="modal-description" class="text-slate-600 leading-relaxed whitespace-pre-line">
+                        Session details loading...
+                    </div>
+                </div>
+
+                <div id="modal-speakers-container">
+                    <h3 class="text-sm font-bold text-slate-900 mb-2">Conveners & Speakers</h3>
+                    <div id="modal-speakers" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+            <div class="bg-slate-50 p-4 border-t border-slate-100 text-right">
+                <button onclick="closeModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition-colors text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Data Extracted from LPC 2025 Schedule PDF ---
+        const scheduleData = [
+            // ================= THURSDAY (Dec 11) =================
+            // --- Morning Block ---
+            { id: "thu_1", day: '2025-12-11', title: "TAB Q&A", time: "09:00 - 09:45", start: "09:00", speakers: ["The Linux Foundation"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "The Linux Foundation Technical Advisory Board (TAB) represents Linux Kernel project interests to the Linux Foundation. Open forum / panel discussion." },
+            
+            // Build Systems MC (Hall B2)
+            { id: "71", day: '2025-12-11', title: "Build System Analysis for Kernel Development", time: "10:00 - 10:30", start: "10:00", speakers: ["Alejandro Hernandez Samaniego"], room: "Hall B2", type: "Build Systems MC", tagClass: "tag-mc", description: "Analyze the kernel development flow and customization functionalities offered by various build systems." },
+            { id: "119", day: '2025-12-11', title: "Debian Official Debug Kernel for All?", time: "10:30 - 11:00", start: "10:30", speakers: ["Yunseong Kim", "Seonghee Jin"], room: "Hall B2", type: "Build Systems MC", tagClass: "tag-mc", description: "Explore sustainable implementation strategies that enable proactive security testing (like Syzbot integration) for Debian." },
+            { id: "405", day: '2025-12-11', title: "Enabling UEFI Secure Boot Across Modern Build Systems", time: "11:00 - 11:30", start: "11:00", speakers: ["Frank Vasquez"], room: "Hall B2", type: "Build Systems MC", tagClass: "tag-mc", description: "Explore what a shared approach to signing infrastructure could look like for build systems." },
+            { id: "425", day: '2025-12-11', title: "One Config to Rule Them All", time: "12:00 - 12:30", start: "12:00", speakers: ["Behan Webster"], room: "Hall B2", type: "Build Systems MC", tagClass: "tag-mc", description: "From systemd to Reliable Embedded Upgrades. Unifying configuration models." },
+            { id: "185", day: '2025-12-11', title: "OpenWrt (One) build system", time: "12:30 - 01:00", start: "12:30", speakers: ["Denver Gingerich"], room: "Hall B2", type: "Build Systems MC", tagClass: "tag-mc", description: "Lessons in all the compliance and how to broadly apply them." },
+            { id: "232", day: '2025-12-11', title: "Improving Build Time SBoMs", time: "13:00 - 13:30", start: "13:00", speakers: ["Joshua Watt"], room: "Hall B2", type: "Build Systems MC", tagClass: "tag-mc", description: "Review current solutions for providing built time SBoM information and discuss improvements." },
+
+            // Device Memory MC (Hall B1)
+            { id: "487", day: '2025-12-11', title: "Introduction and Kickoff", time: "10:00 - 10:05", start: "10:00", speakers: ["Adam Manzanares", "Dan Williams"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Welcome and reminders." },
+            { id: "117", day: '2025-12-11', title: "To online or not to online CXL memory", time: "10:05 - 10:35", start: "10:05", speakers: ["Hannes Reinecke"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Discussion on auto-onlining of CXL memory strategy." },
+            { id: "206", day: '2025-12-11', title: "CXL HDM-DB support for Linux", time: "10:35 - 11:05", start: "10:35", speakers: ["Davidlohr Bueso"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Discuss available upstream support for Host-managed Device Memory." },
+            { id: "285", day: '2025-12-11', title: "Unifying sources of page hotness information", time: "11:05 - 11:35", start: "11:05", speakers: ["Bharata Bhasker Rao"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Collating information from multiple sources to maintain a single source of page hotness." },
+            { id: "289", day: '2025-12-11', title: "Kernel CXL Cache (safe) support", time: "12:00 - 12:20", start: "12:00", speakers: ["Alejandro Lucero"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Properly configuring the system for avoiding arbitrary access from a device to Host memory." },
+            { id: "346", day: '2025-12-11', title: "Parallel Paths to High-Bandwidth Memory for ML/AI", time: "12:20 - 12:40", start: "12:20", speakers: ["Rajneesh Bhardwaj"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Specific Purpose Memory vs. Driver Managed Approaches." },
+            { id: "96", day: '2025-12-11', title: "DAMON-based Pages Migration", time: "12:40 - 13:00", start: "12:40", speakers: ["SeongJae Park"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Migration for {C,G,X}PU [un]attached NUMA nodes using DAMON." },
+            { id: "98", day: '2025-12-11', title: "Protected DMAbufs and its dynamic memory assignment woes", time: "13:00 - 13:20", start: "13:00", speakers: ["Sumit Garg"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Solutions to common problems where collaboration among different kernel subsystems especially MM is required." },
+            { id: "421", day: '2025-12-11', title: "Famfs Update: Status, DAX Challenges & Use Cases", time: "13:20 - 13:35", start: "13:20", speakers: ["John Groves"], room: "Hall B1", type: "Device Memory MC", tagClass: "tag-mc", description: "Update on Fabric-Attached Memory File System." },
+
+            // eBPF Track (Main Hall A)
+            { id: "134", day: '2025-12-11', title: "BPF Verifier Visualizer", time: "10:00 - 10:30", start: "10:00", speakers: ["Ihor Solodrai", "Jordan Rome"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "A tool that aims to improve developer experience of debugging BPF verification failures." },
+            { id: "371", day: '2025-12-11', title: "Making Sense of State Pruning", time: "10:30 - 11:00", start: "10:30", speakers: ["Mahé Tardy", "Paul Chaignon"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Demystifying state pruning in the BPF verifier." },
+            { id: "381", day: '2025-12-11', title: "Loops handling by BPF verifier", time: "11:00 - 11:30", start: "11:00", speakers: ["Eduard Zingerman"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "What should we do about loop handling problems?" },
+            { id: "135", day: '2025-12-11', title: "ePass: Framework for Enhancing Flexibility", time: "12:00 - 12:30", start: "12:00", speakers: ["Yiming Xiang"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Enhancing flexibility and runtime safety of eBPF programs." },
+            { id: "366", day: '2025-12-11', title: "Fuzzing the Verifier with a Test Oracle", time: "12:30 - 13:00", start: "12:30", speakers: ["Paul Chaignon"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Proposing a new test oracle for the verifier." },
+            { id: "367", day: '2025-12-11', title: "eBPF Load-Acquire and Store-Release Instructions", time: "13:00 - 13:30", start: "13:00", speakers: ["Peilin Ye"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Introduction to new atomic instructions in eBPF." },
+            
+            // Kernel Summit (Main Hall B)
+            { id: "127", day: '2025-12-11', title: "Kernel documentation: update and future", time: "10:00 - 10:45", start: "10:00", speakers: ["Jonathan Corbet"], room: "Main Hall B", type: "Kernel Summit", tagClass: "tag-track", description: "Update on docs infrastructure and future directions." },
+            { id: "267", day: '2025-12-11', title: "Moving kernel swapping infrastructure to Rust", time: "10:45 - 11:30", start: "10:45", speakers: ["Vitaly Wool"], room: "Main Hall B", type: "Kernel Summit", tagClass: "tag-track", description: "Discussion on rewriting swapping infrastructure in Rust." },
+            { id: "230", day: '2025-12-11', title: "Highmem deprecation planning", time: "12:00 - 12:45", start: "12:00", speakers: ["Arnd Bergmann"], room: "Main Hall B", type: "Kernel Summit", tagClass: "tag-track", description: "Consensus on dropping highmem support." },
+            { id: "167", day: '2025-12-11', title: "drm and cgroup memory management", time: "12:45 - 13:30", start: "12:45", speakers: ["David Airlie"], room: "Main Hall B", type: "Kernel Summit", tagClass: "tag-track", description: "Integrating DRM memory management with cgroups." },
+
+            // Monitoring MC (Hall B3/B4)
+            { id: "103", day: '2025-12-11', title: "Extending Flamegraphs", time: "10:00 - 10:20", start: "10:00", speakers: ["Gavin Guo"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Multi-Dimensional Performance Analysis." },
+            { id: "76", day: '2025-12-11', title: "Observing Kernel Networking", time: "10:20 - 10:40", start: "10:20", speakers: ["Jason Xing"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Methodology and Practice." },
+            { id: "293", day: '2025-12-11', title: "Proactive/crash-time data collection on Steam Deck", time: "10:40 - 11:00", start: "10:40", speakers: ["Guilherme G. Piccoli"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Tracing and debug features on Steam Deck." },
+            { id: "265", day: '2025-12-11', title: "bpftrace: From Tool To ToolBox", time: "11:00 - 11:20", start: "11:00", speakers: ["Adin Scannell", "Jordan Rome"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Evolving bpftrace into a flexible framework." },
+            { id: "450", day: '2025-12-11', title: "Reading memcg stats more efficiently", time: "11:20 - 11:40", start: "11:20", speakers: ["JP Kobryn"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Optimizations for reading cgroup stat data." },
+            { id: "274", day: '2025-12-11', title: "Actionable DAMON Output", time: "11:50 - 12:10", start: "11:50", speakers: ["SeongJae Park"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Data Access Monitoring Output Data and Format." },
+            { id: "295", day: '2025-12-11', title: "Module Error Injection with eBPF", time: "12:10 - 12:30", start: "12:10", speakers: ["Daniel Gomez"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Using eBPF for error injection." },
+            { id: "440", day: '2025-12-11', title: "Scaling Kernel Production Monitoring @ Meta", time: "12:30 - 12:50", start: "12:30", speakers: ["Vlad Poenaru"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Monitoring kernel on millions of servers." },
+            { id: "395", day: '2025-12-11', title: "Improving page_owner", time: "12:50 - 13:10", start: "12:50", speakers: ["Mauricio Faria de Oliveira"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Profiling and monitoring memory usage per allocation stack trace." },
+            { id: "78", day: '2025-12-11', title: "Guider: Lightweight Real-Time Performance & Fault Monitoring", time: "13:10 - 13:30", start: "13:10", speakers: ["Peace Lee"], room: "Hall B3/B4", type: "Monitoring MC", tagClass: "tag-mc", description: "Framework for Embedded Linux Platforms." },
+
+            // Refereed Track (Hall A1)
+            { id: "495", day: '2025-12-11', title: "KernelSBOM", time: "10:00 - 10:45", start: "10:00", speakers: ["Maximilian Huber"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Reconstructing Linux Kernel Builds into Trusted SPDX Bills of Materials." },
+            { id: "166", day: '2025-12-11', title: "Multikernel Architecture", time: "10:45 - 11:30", start: "10:45", speakers: ["Cong Wang"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Kernel-to-Kernel Isolation and Resource Management." },
+            { id: "257", day: '2025-12-11', title: "Rust for Linux", time: "12:00 - 12:45", start: "12:00", speakers: ["Miguel Ojeda"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Overview of status and latest news." },
+            { id: "493", day: '2025-12-11', title: "Tyr: a new Rust GPU driver", time: "12:45 - 13:30", start: "12:45", speakers: ["Daniel Almeida"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Rust driver for ARM Mali GPUs." },
+
+            // Scheduler MC (Hall A2/3)
+            { id: "469", day: '2025-12-11', title: "Intro to Scheduler and RT MC", time: "10:00 - 10:02", start: "10:00", speakers: ["Vincent Guittot"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Introduction." },
+            { id: "39", day: '2025-12-11', title: "Cache Aware Scheduling", time: "10:02 - 10:24", start: "10:02", speakers: ["Tim Chen", "Yu Chen"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Reducing cache bouncing by keeping threads sharing data together." },
+            { id: "422", day: '2025-12-11', title: "Rethinking Android's Priority Inheritance", time: "10:24 - 10:46", start: "10:24", speakers: ["Carlos Llamas"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Binder driver PI model re-examination." },
+            { id: "313", day: '2025-12-11', title: "Enabling Push call back in Fair class", time: "10:46 - 11:08", start: "10:46", speakers: ["Vincent Guittot"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Migrating tasks on another CPU for the fair scheduling class." },
+            { id: "384", day: '2025-12-11', title: "Push based load-balancing for fair tasks", time: "11:08 - 11:30", start: "11:08", speakers: ["Prateek Nayak"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Alternate to idle and newidle balance." },
+            { id: "345", day: '2025-12-11', title: "Runtime verification monitors for real-time", time: "12:00 - 12:22", start: "12:00", speakers: ["Nam Cao"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Helping users detect incorrect real-time design patterns." },
+            { id: "350", day: '2025-12-11', title: "RV and real-time properties", time: "12:22 - 12:44", start: "12:22", speakers: ["Gabriele Monaco"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Validating timing properties in the kernel." },
+            { id: "118", day: '2025-12-11', title: "CPU Isolation and IPI interference", time: "12:44 - 13:06", start: "12:44", speakers: ["Valentin Schneider"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Mitigating IPIs on isolated CPUs." },
+            { id: "86", day: '2025-12-11', title: "Paravirt Scheduling", time: "13:06 - 13:28", start: "13:06", speakers: ["Ilya Leoshkevich", "Shrikanth Hegde"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Framework for better physical CPU utilization." },
+            { id: "470", day: '2025-12-11', title: "Wrap up", time: "13:28 - 13:30", start: "13:28", speakers: ["Vincent Guittot"], room: "Hall A2/3", type: "Scheduler MC", tagClass: "tag-mc", description: "Closing." },
+
+            // --- AFTERNOON SESSIONS THURSDAY ---
+            { id: "318", day: '2025-12-11', title: "Discussion: What's next for BPF Signing", time: "15:00 - 15:30", start: "15:00", speakers: ["KP Singh"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "More advanced signing use-cases." },
+            { id: "389", day: '2025-12-11', title: "BpfJailer: eBPF based Mandatory Access Control", time: "15:30 - 16:00", start: "15:30", speakers: ["Liam Wisehart"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Jailing untrusted code and preventing tampering." },
+            { id: "269", day: '2025-12-11', title: "Tracking Files across the operating system using eBPF", time: "16:00 - 16:30", start: "16:00", speakers: ["Carl El Khoury"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Monitoring critical files throughout the file system." },
+            { id: "184", day: '2025-12-11', title: "Kernel-Resident Regex and Jails", time: "17:00 - 17:30", start: "17:00", speakers: ["Justin Ngai"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "DFA-powered eBPF filtering and certificate-safe agent isolation." },
+            { id: "402", day: '2025-12-11', title: "Challenges with implementing in-kernel FQDN policies", time: "17:30 - 18:00", start: "17:30", speakers: ["Hemanth Malla"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Using eBPF for FQDN policies." },
+            { id: "380", day: '2025-12-11', title: "Implement simple local DNS server with BPF", time: "18:00 - 18:30", start: "18:00", speakers: ["Raman Shukhau"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Capturing and identifying DNS requests with BPF." },
+            
+            { id: "197", day: '2025-12-11', title: "Re-think of richACLs in AI/LLM era", time: "15:00 - 15:45", start: "15:00", speakers: ["Coly Li"], room: "Main Hall B", type: "Kernel Summit", tagClass: "tag-track", description: "Should we reconsider RichACL?" },
+            { id: "138", day: '2025-12-11', title: "Revocable: a mechanism for preventing classic use-after-free bugs", time: "15:45 - 16:30", start: "15:45", speakers: ["Tzung-Bi Shih"], room: "Main Hall B", type: "Kernel Summit", tagClass: "tag-track", description: "New kernel mechanism for resource management." },
+            { id: "193", day: '2025-12-11', title: "News from PREEMPT_RT", time: "17:00 - 17:45", start: "17:00", speakers: ["Sebastian Siewior"], room: "Main Hall B", type: "Kernel Summit", tagClass: "tag-track", description: "Changes and future of PREEMPT_RT." },
+
+            { id: "315", day: '2025-12-11', title: "Reducing Android Boot Times: Evaluating Proactive File Prefetching", time: "15:00 - 15:28", start: "15:00", speakers: ["Akilesh Kailash"], room: "Hall B3/B4", type: "Embedded MC", tagClass: "tag-mc", description: "Evaluation of a prefetch solution for Android." },
+            { id: "178", day: '2025-12-11', title: "Boot time optimization for embedded devices", time: "15:30 - 15:58", start: "15:30", speakers: ["Saravana Kannan"], room: "Hall B3/B4", type: "Embedded MC", tagClass: "tag-mc", description: "Guidelines helpful on Android systems." },
+            { id: "190", day: '2025-12-11', title: "How to extract a bare metal flavor of code out of Zephyr?", time: "16:00 - 16:28", start: "16:00", speakers: ["Khasim Syed Mohammed"], room: "Hall B3/B4", type: "Embedded MC", tagClass: "tag-mc", description: "Guide to extracting code out of Zephyr." },
+            { id: "327", day: '2025-12-11', title: "Improving stability for TCPM using boards that are not self-powered", time: "17:00 - 17:28", start: "17:00", speakers: ["Sebastian Reichel"], room: "Hall B3/B4", type: "Embedded MC", tagClass: "tag-mc", description: "Improving system stability of boards using fusb302." },
+            { id: "212", day: '2025-12-11', title: "Fixing Clock Tree Propagation in the Common Clk Framework", time: "17:30 - 17:58", start: "17:30", speakers: ["Brian Masney"], room: "Hall B3/B4", type: "Embedded MC", tagClass: "tag-mc", description: "Issues affecting rate changes propagation." },
+            { id: "370", day: '2025-12-11', title: "Firmware ABI stability", time: "18:00 - 18:30", start: "18:00", speakers: ["Marek Vasut"], room: "Hall B3/B4", type: "Embedded MC", tagClass: "tag-mc", description: "Problems with ABI stability in embedded systems." },
+
+            { id: "105", day: '2025-12-11', title: "RV and the deadline scheduler", time: "15:00 - 15:45", start: "15:00", speakers: ["Gabriele Monaco", "Juri Lelli"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "How to verify your subsystem at runtime." },
+            { id: "93", day: '2025-12-11', title: "Path Safety in the Trenches", time: "15:45 - 16:30", start: "15:45", speakers: ["Aleksa Sarai"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Protecting user space programs against filesystem related attacks." },
+            { id: "235", day: '2025-12-11', title: "Adding Testable Code Specifications in the Linux Kernel", time: "17:00 - 17:45", start: "17:00", speakers: ["Chuck Wolber", "Gabriele Paoloni", "Kate Stewart"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Documenting testable expectations." },
+            { id: "262", day: '2025-12-11', title: "Automating Linux Kernel Documentation for Safety-Critical Compliance", time: "17:45 - 18:30", start: "17:45", speakers: ["Grant Stensland", "Justin Stanley", "Morgan Ricks"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Using Large Language Models." },
+
+            { id: "454", day: '2025-12-11', title: "Security Features status update", time: "15:00 - 15:20", start: "15:00", speakers: ["Justin Stitt", "Kees Cook"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Review of progress across GCC, Clang, and Rust." },
+            { id: "310", day: '2025-12-11', title: "Exciting new compiler flags for kernel security", time: "15:20 - 15:40", start: "15:20", speakers: ["Florent Revest"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Profile guided hardening." },
+            { id: "400", day: '2025-12-11', title: "Distributed ThinLTO Build Support in Kbuild", time: "15:40 - 16:00", start: "15:40", speakers: ["Rong Xu"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Enabling distributed ThinLTO builds." },
+            { id: "451", day: '2025-12-11', title: "Adaptive futexes: spin if the owner is still running", time: "16:00 - 16:20", start: "16:00", speakers: ["Steven Rostedt"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Optimizing futex performance." },
+            { id: "447", day: '2025-12-11', title: "Adding C library wrappers for all Linux syscalls", time: "17:00 - 17:20", start: "17:00", speakers: ["Carlos O'Donell"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Revisiting adding C library wrappers." },
+            { id: "449", day: '2025-12-11', title: "Enforcing PI locks by default", time: "17:20 - 17:40", start: "17:20", speakers: ["Qais Yousef"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Addressing Performance Inversion." },
+            { id: "438", day: '2025-12-11', title: "GCC BPF and Linux kernel", time: "17:40 - 18:00", start: "17:40", speakers: ["Jose E. Marchesi"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Problems and issues concerning BPF support in GCC." },
+            { id: "429", day: '2025-12-11', title: "Challenges with Kernels built with LTO", time: "18:00 - 18:20", start: "18:00", speakers: ["Song Liu", "Yonghong Song"], room: "Hall B2", type: "Toolchains MC", tagClass: "tag-mc", description: "Issues with CONFIG_LTO_CLANG_THIN." },
+
+            { id: "347", day: '2025-12-11', title: "Memory Allocation Profiling upcoming features", time: "15:00 - 15:15", start: "15:00", speakers: ["Sourav Panda", "Suren Baghdasaryan"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "New features for memory allocation profiling." },
+            { id: "223", day: '2025-12-11', title: "Mempolicy is dead, long live memory policy!", time: "15:15 - 15:30", start: "15:15", speakers: ["Gregory Price"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Discussing new memory policy designs." },
+            { id: "226", day: '2025-12-11', title: "CMA allocations fail due to pinned MOVABLE pages", time: "15:30 - 15:45", start: "15:30", speakers: ["Juan Yescas", "Kalesh Singh"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Issues with MIGRATE_CMA pages." },
+            { id: "363", day: '2025-12-11', title: "Folio Restructuring for Huge Pages in guest_memfd", time: "15:45 - 16:00", start: "15:45", speakers: ["Ackerley Tng"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Adding huge page support to guest_memfd." },
+            { id: "126", day: '2025-12-11', title: "Deprecating zone_reclaim_mode", time: "16:00 - 16:15", start: "16:00", speakers: ["Joshua Hahn"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Is it time to deprecate zone_reclaim_mode?" },
+            { id: "125", day: '2025-12-11', title: "Per-cgroup Swap Device Control", time: "16:15 - 16:30", start: "16:15", speakers: ["Chris Li", "YoungJun Park"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Enabling cgroup-level control over swap devices." },
+            { id: "404", day: '2025-12-11', title: "type-based slab allocation: kmalloc_obj family", time: "17:00 - 17:15", start: "17:00", speakers: ["Kees Cook"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Exposing type information to the allocator." },
+            { id: "379", day: '2025-12-11', title: "Memory descriptors for DEVICE_PRIVATE memory", time: "17:15 - 17:30", start: "17:15", speakers: ["Alistair Popple"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Removing struct pages for DEVICE_PRIVATE memory." },
+            { id: "114", day: '2025-12-11', title: "Decoupling Large Folios from Transparent Huge Pages", time: "17:30 - 17:45", start: "17:30", speakers: ["Pankaj Raghav"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Identifying dependencies." },
+            { id: "264", day: '2025-12-11', title: "The life cycle of the mm_struct", time: "17:45 - 18:00", start: "17:45", speakers: ["Liam Howlett"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Issues with mm_struct initialization/exit." },
+            { id: "403", day: '2025-12-11', title: "Taming Zombie Cgroups: Should Reparenting Be Simple or Smart?", time: "18:00 - 18:15", start: "18:00", speakers: ["Harry Yoo", "Kamalesh Babulal"], room: "Hall A2/3", type: "Kernel MM MC", tagClass: "tag-mc", description: "Resolving zombie memory cgroup issues." },
+
+            { id: "social_thu", day: '2025-12-11', title: "Evening Event", time: "18:30 - 21:30", start: "18:30", speakers: [], room: "TBD", type: "Social", tagClass: "tag-social", description: "Evening event details are on the back of your badge." },
+
+            // ================= FRIDAY (Dec 12) =================
+            // Refereed Track (Hall A1)
+            { id: "231", day: '2025-12-12', title: "TAB Q&A", time: "09:00 - 09:45", start: "09:00", speakers: ["TAB Members"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Linux Foundation Technical Advisory Board Q&A." },
+            { id: "27", day: '2025-12-12', title: "One year into the new KernelCI", time: "10:00 - 10:45", start: "10:00", speakers: ["Gustavo Padovan"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Progress report on KernelCI." },
+            { id: "8", day: '2025-12-12', title: "Detecting Potential Deadlocks with DEPT", time: "10:45 - 11:30", start: "10:45", speakers: ["Byungchul Park"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "More effective approach to detecting deadlocks." },
+            { id: "208", day: '2025-12-12', title: "Userspace Assisted Scheduling via Sched QoS", time: "12:00 - 12:45", start: "12:00", speakers: ["John Stultz", "Qais Yousef", "Steven Rostedt", "Vincent Guittot"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Introducing Quality of Service into the scheduler." },
+            { id: "261", day: '2025-12-12', title: "SFrame for Arm64 Reliable Stacktrace", time: "12:45 - 13:30", start: "12:45", speakers: ["Dylan Hatch", "Weinan Liu"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Providing reliable stacktraces within the Arm64 kernel." },
+            { id: "50", day: '2025-12-12', title: "TPMs and the Linux Kernel", time: "15:00 - 15:45", start: "15:00", speakers: ["Ignat Korchagin"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Unlocking a better path to hardware security." },
+            { id: "494", day: '2025-12-12', title: "NVIDIA's Approach for Achieving ASIL B Qualified Linux", time: "15:45 - 16:30", start: "15:45", speakers: ["Bryan Huntsman"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Safety integrity qualification approach." },
+            { id: "95", day: '2025-12-12', title: "Page-level and Fleet-wide Data Access Monitoring", time: "17:00 - 17:45", start: "17:00", speakers: ["SeongJae Park"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "DAMON usage at Meta." },
+            { id: "250", day: '2025-12-12', title: "Enabling AMD 2D Hardware Acceleration", time: "17:45 - 18:30", start: "17:45", speakers: ["Solomon Chiu"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Using AMD's VPE for video post-processing." },
+
+            // BoF (Main Hall B)
+            { id: "244", day: '2025-12-12', title: "Towards Real-Time NVMe Monitoring (nvme-top)", time: "10:00 - 10:45", start: "10:00", speakers: ["Daniel Wagner", "Nilay Shroff"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Tool for real-time monitoring of NVMe fabrics." },
+            { id: "409", day: '2025-12-12', title: "Solving Zombie Cgroups", time: "10:45 - 11:30", start: "10:45", speakers: ["Harry Yoo", "Kamalesh Babulal"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Simple Fix or Smart Solution?" },
+            { id: "137", day: '2025-12-12', title: "Syzbot BoF: Open Discussion", time: "12:00 - 12:45", start: "12:00", speakers: ["Aleksandr Nogikh", "Alexander Potapenko", "Dmitry Vyukov", "Marco Elver"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Discussion between syzbot engineers and kernel developers." },
+            { id: "136", day: '2025-12-12', title: "Kernel Sanitizers Office Hours", time: "12:45 - 13:30", start: "12:45", speakers: ["Kernel Sanitizers Team"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "KASAN, KMSAN, KCSAN, UBSAN." },
+            { id: "203", day: '2025-12-12', title: "32bit and-or noMMU Linux BoF", time: "15:00 - 15:45", start: "15:00", speakers: ["Ruinland ChuanTzu Tsai", "Geert Uytterhoeven"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Discussing the future of 32-bit/noMMU support." },
+            { id: "486", day: '2025-12-12', title: "Agentic AI, confidential computing and attested TLS", time: "15:45 - 16:30", start: "15:45", speakers: ["Muhammad Usama Sardar"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Intersections of AI, CoCo, and Attested TLS." },
+            { id: "44", day: '2025-12-12', title: "ARM Laptop BoF", time: "17:00 - 17:45", start: "17:00", speakers: ["Stefan Schmidt", "Vinod Koul"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Bootchain, Thermal, End-to-End hardware capabilities." },
+            { id: "102", day: '2025-12-12', title: "Kernel TEE subsystem BoF", time: "17:45 - 18:30", start: "17:45", speakers: ["Jens Wiklander", "Sumit Garg"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Ongoing evolution of kernel TEE subsystem." },
+
+            // BoF (Meeting Room 1)
+            { id: "497", day: '2025-12-12', title: "Toward Mainline Linux Support for UALink", time: "10:00 - 10:45", start: "10:00", speakers: ["Konstantin Sinyuk"], room: "Meeting Room 1", type: "BoF", tagClass: "tag-bof", description: "AI Scale-UP Interconnect." },
+            { id: "499", day: '2025-12-12', title: "BoF: memory fragmentation with LBS", time: "10:45 - 11:30", start: "10:45", speakers: ["Hannes Reinecke", "Luis Chamberlain"], room: "Meeting Room 1", type: "BoF", tagClass: "tag-bof", description: "Discussing fragmentation on LBS." },
+            { id: "500", day: '2025-12-12', title: "Unified Linux GPU compute kernel driver", time: "12:00 - 12:45", start: "12:00", speakers: ["Luis Chamberlain"], room: "Meeting Room 1", type: "BoF", tagClass: "tag-bof", description: "Do we really need different GPU drivers for GPU compute?" },
+
+            // Confidential Computing MC (Hall B2)
+            { id: "116", day: '2025-12-12', title: "Optimizing guest_memfd shared/private conversions", time: "10:00 - 10:30", start: "10:00", speakers: ["Ackerley Tng"], room: "Hall B2", type: "Confidential Computing MC", tagClass: "tag-mc", description: "HugeTLB support in guest_memfd." },
+            { id: "294", day: '2025-12-12', title: "Toward a standard device attestation token", time: "10:30 - 11:00", start: "10:30", speakers: ["Mathieu Poirier", "Thomas Fossati"], room: "Hall B2", type: "Confidential Computing MC", tagClass: "tag-mc", description: "Standardising Evidence claims." },
+            { id: "388", day: '2025-12-12', title: "PCI device authentication & encryption", time: "11:00 - 11:30", start: "11:00", speakers: ["Alexey Kardashevskiy", "Mathieu Poirier"], room: "Hall B2", type: "Confidential Computing MC", tagClass: "tag-mc", description: "Reviving discussion on PCIe device attestation." },
+            { id: "416", day: '2025-12-12', title: "Standardization of Attested TLS Protocols", time: "12:00 - 12:30", start: "12:00", speakers: ["Muhammad Usama Sardar"], room: "Hall B2", type: "Confidential Computing MC", tagClass: "tag-mc", description: "Updates on IETF standardization." },
+            { id: "399", day: '2025-12-12', title: "Discussion: TDISP, VM migration, and paravisors", time: "12:30 - 12:55", start: "12:30", speakers: ["John Starks"], room: "Hall B2", type: "Confidential Computing MC", tagClass: "tag-mc", description: "Challenges with TDISP." },
+            { id: "385", day: '2025-12-12', title: "A Linux Bus for SVSM Services", time: "12:55 - 13:15", start: "12:55", speakers: ["Stefano Garzarella"], room: "Hall B2", type: "Confidential Computing MC", tagClass: "tag-mc", description: "Architectural choices for SVSM bus." },
+            { id: "280", day: '2025-12-12', title: "Secure Interrupt delivery", time: "13:15 - 13:30", start: "13:15", speakers: ["Melody Wang"], room: "Hall B2", type: "Confidential Computing MC", tagClass: "tag-mc", description: "Lessons Learned from Alternate Injection Enablement." },
+
+            // Containers MC (Hall B1)
+            { id: "439", day: '2025-12-12', title: "seccomp listeners for nested containers", time: "10:00 - 10:30", start: "10:00", speakers: ["Aleksandr Mikhalitsyn"], room: "Hall B1", type: "Containers MC", tagClass: "tag-mc", description: "Supporting multiple or nested listeners." },
+            { id: "77", day: '2025-12-12', title: "Optimizing Checkpoints with Built-in Memory Page Compression", time: "10:30 - 11:00", start: "10:30", speakers: ["Radostin Stoyanov"], room: "Hall B1", type: "Containers MC", tagClass: "tag-mc", description: "Reducing CRIU performance overhead." },
+            { id: "124", day: '2025-12-12', title: "Guarded Control Stack on arm64", time: "11:00 - 11:30", start: "11:00", speakers: ["Igor Svilenkov Bozic"], room: "Hall B1", type: "Containers MC", tagClass: "tag-mc", description: "Enabling Shadow Stack Support for CRIU." },
+            { id: "328", day: '2025-12-12', title: "EROFS and containers", time: "12:00 - 12:30", start: "12:00", speakers: ["Xiang Gao"], room: "Hall B1", type: "Containers MC", tagClass: "tag-mc", description: "Use cases and ongoing features." },
+            { id: "424", day: '2025-12-12', title: "Files on Unmounted Mounts", time: "12:30 - 13:00", start: "12:30", speakers: ["Bhavik Sachdev"], room: "Hall B1", type: "Containers MC", tagClass: "tag-mc", description: "Extracting mountinfo for checkpoint/restore." },
+            { id: "365", day: '2025-12-12', title: "Clean-up on Aisle \"fsconfig(2)\"", time: "13:00 - 13:30", start: "13:00", speakers: ["Aleksa Sarai"], room: "Hall B1", type: "Containers MC", tagClass: "tag-mc", description: "Usability issues in new mount API." },
+
+            // eBPF Track (Main Hall A)
+            { id: "237", day: '2025-12-12', title: "Advanced BPF profiling techniques", time: "10:00 - 10:30", start: "10:00", speakers: ["Andrii Nakryiko"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Escaping NMI curse and fetching ELF contents." },
+            { id: "281", day: '2025-12-12', title: "bpf tracing multi-link supporting", time: "10:30 - 11:00", start: "10:30", speakers: ["Menglong Dong"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Efficient binding of single BPF program to multiple functions." },
+            { id: "341", day: '2025-12-12', title: "uprobe optimization and override", time: "11:00 - 11:30", start: "11:00", speakers: ["Jiri Olsa"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Updates on uprobe optimizations." },
+            { id: "316", day: '2025-12-12', title: "Supply true signatures to vmlinux BTF", time: "12:00 - 12:30", start: "12:00", speakers: ["Yonghong Song"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Adding signatures to kallsyms." },
+            { id: "344", day: '2025-12-12', title: "cache_ext: Customizing the Page Cache with eBPF", time: "12:30 - 13:00", start: "12:30", speakers: ["Tal Zussman"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Flexible eBPF-based framework for page cache." },
+            { id: "182", day: '2025-12-12', title: "Lessons from scaling BPF to detect RDMA Device Drivers Bugs", time: "13:00 - 13:30", start: "13:00", speakers: ["Prankur Gupta"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Real time detection." },
+            { id: "453", day: '2025-12-12', title: "AI flame graphs with eBPF", time: "15:00 - 15:30", start: "15:00", speakers: ["Brendan Gregg", "Ben Olson"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Open source AI flame graphs." },
+            { id: "194", day: '2025-12-12', title: "Fingerprinting GPU workloads with eBPF", time: "15:30 - 16:00", start: "15:30", speakers: ["Jiri Gogela"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Bridging the Observability Gap." },
+            { id: "317", day: '2025-12-12', title: "Extending eBPF to GPU Device and Driver Contexts", time: "16:00 - 16:30", start: "16:00", speakers: ["Yusheng Zheng", "Tong Yu"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Offloading eBPF into GPU device contexts." },
+            { id: "397", day: '2025-12-12', title: "Python-BPF: Writing eBPF programs in pure Python", time: "17:00 - 17:30", start: "17:00", speakers: ["Pragyansh Chaturvedi", "Varun Mallya"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Writing eBPF programs in pure Python." },
+            { id: "65", day: '2025-12-12', title: "Practical Realities of Using eBPF in LTS Systems", time: "17:30 - 18:00", start: "17:30", speakers: ["Kenta Tada"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Challenges in embedded/LTS environments." },
+            { id: "107", day: '2025-12-12', title: "From Projects to Ecosystems", time: "18:00 - 18:30", start: "18:00", speakers: ["Bill Mulligan"], room: "Main Hall A", type: "eBPF Track", tagClass: "tag-track", description: "Lessons from the eBPF Foundation." },
+
+            // Rust MC (Hall B3/B4)
+            { id: "240", day: '2025-12-12', title: "Detecting and Mitigating Implicit Panics in Rust", time: "10:00 - 10:20", start: "10:00", speakers: ["Alexandre Courbot"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "Overflowing with Fear." },
+            { id: "332", day: '2025-12-12', title: "External locking for internally synchronized data structures", time: "10:20 - 10:40", start: "10:20", speakers: ["Andreas Hindborg"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "Addressing locking challenges." },
+            { id: "55", day: '2025-12-12', title: "Initialization in Rust with pin-init", time: "10:40 - 11:00", start: "10:40", speakers: ["Benno Lossin"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "Using pin-init library." },
+            { id: "319", day: '2025-12-12', title: "Rust language evolutions for kernel developer experience", time: "11:00 - 11:20", start: "11:00", speakers: ["Xiangfei Ding"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "Upcoming language features." },
+            { id: "329", day: '2025-12-12', title: "Tyr: a new Rust GPU driver", time: "12:00 - 12:20", start: "12:00", speakers: ["Alice Ryhl", "Daniel Almeida"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "Showcase current state of Tyr." },
+            { id: "82", day: '2025-12-12', title: "Challenges with HID and device driver support in Rust", time: "12:20 - 12:40", start: "12:20", speakers: ["Rahul Rameshbabu"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "Binding C API and specialized drivers." },
+            { id: "418", day: '2025-12-12', title: "Exploring a real life RCU use case for Rust", time: "12:40 - 13:00", start: "12:40", speakers: ["Vitaly Wool"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "RCU support in Rust." },
+            { id: "407", day: '2025-12-12', title: "Rex and its integration with Rust-for-Linux", time: "13:00 - 13:20", start: "13:00", speakers: ["Jinghao Jia", "Ruowen Qin"], room: "Hall B3/B4", type: "Rust MC", tagClass: "tag-mc", description: "Rust-based kernel extension framework." },
+
+            // Safe Systems MC (Hall A2/3)
+            { id: "410", day: '2025-12-12', title: "Aspects of Dependable Linux Systems", time: "10:00 - 10:10", start: "10:00", speakers: ["Kate Stewart", "Philipp Ahmann"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Intro discussion." },
+            { id: "398", day: '2025-12-12', title: "NVIDIA Approach for Achieving ASIL B Qualified Linux", time: "10:10 - 10:35", start: "10:10", speakers: ["Igor Stoppa"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Minimizing expectations from upstream." },
+            { id: "369", day: '2025-12-12', title: "Applying Program Verification to Linux Kernel Code", time: "10:35 - 11:00", start: "10:35", speakers: ["Keisuke Nishimura"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Challenges, Practices, and Automation." },
+            { id: "79", day: '2025-12-12', title: "Defining and maintaining requirements in the Linux Kernel", time: "11:00 - 11:30", start: "11:00", speakers: ["Chuck Wolber", "Gabriele Paoloni", "Kate Stewart"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "ELISA updates." },
+            { id: "249", day: '2025-12-12', title: "KUnit Testing Insufficiencies", time: "12:00 - 12:25", start: "12:00", speakers: ["Matthew Whitehead"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Challenges in scalability and integration." },
+            { id: "432", day: '2025-12-12', title: "Integrating StrictDoc with ELISA", time: "12:25 - 12:40", start: "12:25", speakers: ["Tobias Deiminger"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Requirements template approach." },
+            { id: "437", day: '2025-12-12', title: "BASIL: Traceability as Code", time: "12:40 - 12:55", start: "12:40", speakers: ["Luigi Pellecchia"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Automated generation of traceability matrices." },
+            { id: "443", day: '2025-12-12', title: "Tooling and Sharing Traceability Discussion", time: "12:55 - 13:20", start: "12:55", speakers: ["Group Discussion"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Open Discussion." },
+            { id: "444", day: '2025-12-12', title: "Wrap up and next steps", time: "13:20 - 13:30", start: "13:20", speakers: ["Kate Stewart", "Philipp Ahmann"], room: "Hall A2/3", type: "Safe Systems MC", tagClass: "tag-mc", description: "Closing." },
+
+            // Power & Thermal MC (Hall B3/B4) - Afternoon
+            { id: "349", day: '2025-12-12', title: "Evolving genpd's ->sync_state() support", time: "15:10 - 15:30", start: "15:10", speakers: ["Saravana Kannan", "Ulf Hansson"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Addressing generic problems with fw_devlink." },
+            { id: "456", day: '2025-12-12', title: "Thermal framework issues and limitations", time: "15:30 - 15:50", start: "15:30", speakers: ["Daniel Lezcano"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Proposing direction to improve thermal framework." },
+            { id: "435", day: '2025-12-12', title: "Updating Energy Model from Thermal", time: "15:50 - 16:10", start: "15:50", speakers: ["Lukasz Luba"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Updating power values based on heat." },
+            { id: "430", day: '2025-12-12', title: "Generic voting mechanism to build on top PM QoS", time: "16:10 - 16:30", start: "16:10", speakers: ["Daniel Lezcano"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Defining semantics of voting mechanism." },
+            { id: "291", day: '2025-12-12', title: "Multiple system-wide low power-states", time: "16:50 - 17:10", start: "16:50", speakers: ["Kevin Hilman", "Ulf Hansson"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "User-space interface for latency constraints." },
+            { id: "292", day: '2025-12-12', title: "Is enhancing support for s2idle for legacy platforms still a good idea?", time: "17:10 - 17:30", start: "17:10", speakers: ["Ulf Hansson"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Legacy platform support." },
+            { id: "445", day: '2025-12-12', title: "Hibernation Testing Challenges and Optimization Opportunities", time: "17:30 - 17:50", start: "17:30", speakers: ["Srinivas Pandruvada"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Optimization areas for hibernation." },
+            { id: "159", day: '2025-12-12', title: "Thermal binning support", time: "17:50 - 18:10", start: "17:50", speakers: ["Amit Kucheria"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Property for difference in thermal properties." },
+            { id: "496", day: '2025-12-12', title: "Graceful Performance Management for Non-Linux Co-Processors", time: "18:10 - 18:30", start: "18:10", speakers: ["Amit Kucheria"], room: "Hall B3/B4", type: "Power & Thermal MC", tagClass: "tag-mc", description: "Coordinating performance management." },
+
+            // Kernel Testing MC (Hall A2/3) - Afternoon
+            { id: "60", day: '2025-12-12', title: "UAPI testing with KUnit", time: "15:00 - 15:20", start: "15:00", speakers: ["Thomas Weißschuh"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Building test applications as part of kernel build." },
+            { id: "72", day: '2025-12-12', title: "Kselftests augmented", time: "15:20 - 15:40", start: "15:20", speakers: ["Ricardo Cañuelo"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Running kernelspace tests from userspace." },
+            { id: "89", day: '2025-12-12', title: "KFuzzTest: Targeted Fuzzing of Internal Kernel Functions", time: "15:40 - 16:00", start: "15:40", speakers: ["Ethan Graham"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Bridge the gap to internal kernel functions." },
+            { id: "200", day: '2025-12-12', title: "SYZOS: Practical KVM fuzzing", time: "16:00 - 16:20", start: "16:00", speakers: ["Alexander Potapenko"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Overcoming challenges in fuzzing KVM." },
+            { id: "337", day: '2025-12-12', title: "syzbot ci: continuous patch series fuzzing", time: "16:50 - 17:10", start: "16:50", speakers: ["Aleksandr Nogikh"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Shifting fuzzing left." },
+            { id: "305", day: '2025-12-12', title: "Automating Scope-Based Resource Cleanup with Coccinelle", time: "17:10 - 17:30", start: "17:10", speakers: ["Erick Muthama"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Automating transition to scope-based cleanup." },
+            { id: "308", day: '2025-12-12', title: "The singularity is here for testing", time: "17:30 - 17:50", start: "17:30", speakers: ["Luis Chamberlain"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "GenAI advancements on kdevops." },
+            { id: "330", day: '2025-12-12', title: "KernelCI kci-dev", time: "17:50 - 18:10", start: "17:50", speakers: ["Arisu Tachibana"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Closing the developer feedback loop." },
+            { id: "382", day: '2025-12-12', title: "A fast path to benchmarking", time: "18:10 - 18:30", start: "18:10", speakers: ["Mark Brown"], room: "Hall A2/3", type: "Testing MC", tagClass: "tag-mc", description: "Introduces Fastpath tool." },
+
+            // RISC-V MC (Hall B1) - Afternoon
+            { id: "477", day: '2025-12-12', title: "Introduction", time: "15:00 - 15:03", start: "15:00", speakers: [], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "Intro." },
+            { id: "391", day: '2025-12-12', title: "Preparing RISC-V Linux for RVA23", time: "15:03 - 15:30", start: "15:03", speakers: ["Charlie Jenkins"], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "Adapting kernel to support RVA23." },
+            { id: "351", day: '2025-12-12', title: "Declaring WARL on the ISA string", time: "15:30 - 16:00", start: "15:30", speakers: ["Radim Krčmář"], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "Issues with WARL discovery." },
+            { id: "53", day: '2025-12-12', title: "Schism: Splitting RV32 from arch/riscv", time: "16:00 - 16:30", start: "16:00", speakers: ["Ruinland ChuanTzu Tsai", "ChunWei Shu"], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "Splitting RV32 support." },
+            { id: "100", day: '2025-12-12', title: "Finer-grained kernel control flow integrity", time: "17:00 - 17:20", start: "17:00", speakers: ["Deepak Gupta"], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "Challenges with CFI." },
+            { id: "378", day: '2025-12-12', title: "RISC-V QoS: CBQRI, RQSC and resctrl", time: "17:20 - 17:40", start: "17:20", speakers: ["Drew Fustini"], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "QoS functionality." },
+            { id: "199", day: '2025-12-12', title: "Solving Pre-silicon Kernel Upstream", time: "17:40 - 18:00", start: "17:40", speakers: ["Yuning Liang"], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "Upstreaming before silicon." },
+            { id: "273", day: '2025-12-12', title: "Debugging RISC-V Kernel Crashes", time: "18:00 - 18:20", start: "18:00", speakers: ["Austin Kim"], room: "Hall B1", type: "RISC-V MC", tagClass: "tag-mc", description: "KDUMP, vmcore, and Crash Utility Enhancements." },
+
+            // sched_ext MC (Hall B2) - Afternoon
+            { id: "90", day: '2025-12-12', title: "sched_ext: current status and future plans", time: "15:00 - 15:18", start: "15:00", speakers: ["Andrea Righi"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Kick off and overview." },
+            { id: "66", day: '2025-12-12', title: "Enhancing sched_ext BPF Scheduler Interoperability", time: "15:18 - 15:36", start: "15:18", speakers: ["Daniel Hodges"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Improving interoperability." },
+            { id: "84", day: '2025-12-12', title: "Can ProxyExec and sched_ext get along?", time: "15:36 - 15:54", start: "15:36", speakers: ["John Stultz"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Proxy Execution integration." },
+            { id: "87", day: '2025-12-12', title: "scx_chaos: Pushing the sched_ext API to schedule badly", time: "15:54 - 16:12", start: "15:54", speakers: ["Jake Hillion"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Chaotic scheduler testing." },
+            { id: "92", day: '2025-12-12', title: "Scheduler composability with arena-based data structures", time: "16:12 - 16:30", start: "16:12", speakers: ["Emil Tsalapatis"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Arena-based structures." },
+            { id: "73", day: '2025-12-12', title: "Accelerating AI training fleets with sched_ext", time: "17:00 - 17:36", start: "17:00", speakers: ["Patrick Lu"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Deployment on large fleet." },
+            { id: "113", day: '2025-12-12', title: "Taming the Chiplet: High Performance CCX scheduling", time: "17:36 - 17:54", start: "17:36", speakers: ["Aniket Gattani"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Fine-grained control via BPF." },
+            { id: "164", day: '2025-12-12', title: "The Current Status and Future Direction of the LAVD Scheduler", time: "17:54 - 18:12", start: "17:54", speakers: ["Changwoo Min"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Optimizing latency and energy efficiency." },
+            { id: "139", day: '2025-12-12', title: "How do we make a Steamdeck scheduler work on large servers", time: "18:12 - 18:30", start: "18:12", speakers: ["David Dai"], room: "Hall B2", type: "sched_ext MC", tagClass: "tag-mc", description: "Scaling SCX_LAVD." },
+            
+            // Evening Event (Friday)
+            { id: "fri_ev", day: '2025-12-12', title: "Evening Event", time: "19:00 - 22:00", start: "19:00", speakers: [], room: "TBD", type: "Social", tagClass: "tag-social", description: "Details on badge." },
+
+            // ================= SATURDAY (Dec 13) =================
+            // Networking Track (Main Hall A)
+            { id: "483", day: '2025-12-13', title: "Networking track kick-off", time: "10:00 - 10:20", start: "10:00", speakers: ["Jakub Kicinski"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "General update." },
+            { id: "441", day: '2025-12-13', title: "SUPERp: Scale UP EtherRnet Protocol", time: "10:25 - 10:55", start: "10:25", speakers: ["Tom Herbert"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "Open networking protocol for Scale Up." },
+            { id: "434", day: '2025-12-13', title: "Experiments in Using AI to Enhance STP", time: "11:00 - 11:30", start: "11:00", speakers: ["Stephen Hemminger"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "AI with kernel networking code." },
+            { id: "462", day: '2025-12-13', title: "Locality-Aware, Self-Adjusting Data Structures", time: "12:00 - 12:30", start: "12:00", speakers: ["Jonas Köppeler"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "Case Study in Linux Firewalls." },
+            { id: "458", day: '2025-12-13', title: "Congestion Signaling (CSIG)", time: "12:30 - 13:00", start: "12:30", speakers: ["Sagarika Sharma"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "Linux TCP Data Center Networking." },
+            { id: "331", day: '2025-12-13', title: "Running PTP at scale", time: "13:00 - 13:30", start: "13:00", speakers: ["Vadim Fedorenko"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "Scalability and reliability issues." },
+            { id: "383", day: '2025-12-13', title: "Packet Metadata - Where Are Thee?", time: "15:05 - 15:35", start: "15:05", speakers: ["Jakub Sitnicki"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "Rich metadata to packets." },
+            { id: "460", day: '2025-12-13', title: "The case for zero-copy in containers", time: "15:40 - 16:20", start: "15:40", speakers: ["Anton Protopopov"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "Accelerating KubeVirt." },
+            { id: "177", day: '2025-12-13', title: "Kernel-Native Packet Processing on AMD GPUs", time: "17:00 - 17:30", start: "17:00", speakers: ["Taehee Yoo"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "XDP Offload without Userspace Runtimes." },
+            { id: "239", day: '2025-12-13', title: "Linux Networking with MANA", time: "17:35 - 18:15", start: "17:35", speakers: ["Dipayan Roy"], room: "Main Hall A", type: "Networking Track", tagClass: "tag-track", description: "RX Path Optimization and Netshaper." },
+
+            // Android MC (Hall A2/3)
+            { id: "151", day: '2025-12-13', title: "Android Boot: Next Steps", time: "10:00 - 10:15", start: "10:00", speakers: ["Dmitrii Merkurev"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "GBL, FIT, EFIStub." },
+            { id: "303", day: '2025-12-13', title: "Bootloader-Based S2D Mechanism on mobile", time: "10:15 - 10:30", start: "10:15", speakers: ["Tengfei Fan"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Suspend to Disk." },
+            { id: "348", day: '2025-12-13', title: "A Linux VM on Android via AVF", time: "10:30 - 10:45", start: "10:30", speakers: ["Jeongik Cha"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Running Debian on Android." },
+            { id: "287", day: '2025-12-13', title: "Ramdump for Trusted VMs", time: "10:45 - 11:00", start: "10:45", speakers: ["Cong Zhang"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Crash Debugging." },
+            { id: "228", day: '2025-12-13', title: "BPF Based Telemetry, Metrics, and Accounting", time: "11:00 - 11:15", start: "11:00", speakers: ["T.J. Mercier"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Using BPF for telemetry." },
+            { id: "54", day: '2025-12-13', title: "AOSP on taped-out RISC-V SoC without RVA22/23", time: "11:15 - 11:30", start: "11:15", speakers: ["Ruinland ChuanTzu Tsai"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Porting Android." },
+            { id: "393", day: '2025-12-13', title: "Pixel 6 support upstream and on android-mainline", time: "12:00 - 12:15", start: "12:00", speakers: ["William McVicker"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Progress on upstreaming." },
+            { id: "131", day: '2025-12-13', title: "How do we make KUnit work for us?", time: "12:15 - 12:30", start: "12:15", speakers: ["Tiffany Yang"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "KUnit testing." },
+            { id: "297", day: '2025-12-13', title: "Cooperation between CPU and system level cache by using MPAM", time: "12:30 - 12:45", start: "12:30", speakers: ["Yiwei Huang"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "MPAM usage." },
+            { id: "176", day: '2025-12-13', title: "Android Ashmem to Memfd", time: "12:45 - 13:00", start: "12:45", speakers: ["Isaac Manjarres"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Migration from ashmem." },
+            { id: "175", day: '2025-12-13', title: "Challenge of Loading 4kB-Aligned ELFs on 16kB Systems", time: "13:00 - 13:15", start: "13:00", speakers: ["Juan Yescas"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "16kB page size transition." },
+            { id: "172", day: '2025-12-13', title: "HW/SW design recommendations for 16kb devices", time: "13:15 - 13:30", start: "13:15", speakers: ["Juan Yescas"], room: "Hall A2/3", type: "Android MC", tagClass: "tag-mc", description: "Design decisions." },
+
+            // BoF (Main Hall B)
+            { id: "19", day: '2025-12-13', title: "ML applications in Linux kernel", time: "10:00 - 10:45", start: "10:00", speakers: ["Viacheslav Dubeyko"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Using ML in Linux kernel." },
+            { id: "255", day: '2025-12-13', title: "Linux CVE workgroup", time: "10:45 - 11:30", start: "10:45", speakers: ["Damiano Melotti"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Sharing CVE assessments." },
+            { id: "81", day: '2025-12-13', title: "Hardware in the loop pipelines for testing", time: "12:00 - 12:45", start: "12:00", speakers: ["Vipul Gupta"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "HiTL pipeline." },
+            { id: "13", day: '2025-12-13', title: "KDLP: Expanding the Linux Kernel Talent Pipeline", time: "12:45 - 13:30", start: "12:45", speakers: ["Denis Aleksandrov"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Kernel education." },
+            { id: "322", day: '2025-12-13', title: "COCONUT-SVSM BOF", time: "15:00 - 15:45", start: "15:00", speakers: ["Joerg Roedel"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "State and futures directions." },
+            { id: "41", day: '2025-12-13', title: "Microconference for resctrl", time: "15:45 - 16:30", start: "15:45", speakers: ["Fenghua Yu"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "resctrl development." },
+            { id: "465", day: '2025-12-13', title: "Rust for Linux Office Hours", time: "17:00 - 17:45", start: "17:00", speakers: ["Alice Ryhl"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "Rust-related BoF." },
+            { id: "468", day: '2025-12-13', title: "Installing and Using the Linux-Kernel Memory Model", time: "17:45 - 18:30", start: "17:45", speakers: ["Boqun Feng"], room: "Main Hall B", type: "BoF", tagClass: "tag-bof", description: "LKMM tool BoF." },
+
+            // Refereed Track (Hall A1)
+            { id: "141", day: '2025-12-13', title: "Beyond the Demo Kernel: Mapping BSPs to Mainline", time: "10:00 - 10:45", start: "10:00", speakers: ["Alessandro Carminati"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Upstreaming BSPs." },
+            { id: "224", day: '2025-12-13', title: "Rethinking Linux tools with Compact Debuginfo Formats", time: "10:45 - 11:30", start: "10:45", speakers: ["Stephen Brennan"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Compact debuginfo." },
+            { id: "209", day: '2025-12-13', title: "Perf tools updates and beyond", time: "12:00 - 12:45", start: "12:00", speakers: ["Namhyung Kim"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "perf tools new features." },
+            { id: "85", day: '2025-12-13', title: "Meminspect - Kernel memory selection and inspection mechanism", time: "12:45 - 13:30", start: "12:45", speakers: ["Eugen Hristev"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Selecting chunks of kernel memory for inspection." },
+            { id: "202", day: '2025-12-13', title: "Linux Tracing updates", time: "15:00 - 15:45", start: "15:00", speakers: ["Masami Hiramatsu"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Ftrace updates." },
+            { id: "238", day: '2025-12-13', title: "A (Simple) Hazard Pointer Update", time: "15:45 - 16:30", start: "15:45", speakers: ["Boqun Feng"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "In-kernel hazard pointers." },
+            { id: "266", day: '2025-12-13', title: "Demystifying Linux NPU Subsystem", time: "17:00 - 17:45", start: "17:00", speakers: ["Jagan Teki"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "NPU subsystem." },
+            { id: "51", day: '2025-12-13', title: "Power Management and USB Fuzzing", time: "17:45 - 18:30", start: "17:45", speakers: ["Darrion Ramos"], room: "Hall A1", type: "Refereed Track", tagClass: "tag-ref", description: "Fuzzing PM subsystem." },
+
+            // System Boot MC (Hall B2)
+            { id: "423", day: '2025-12-13', title: "Ultraviolet: A Code Integrity Model for Minimal Container Hosts", time: "10:00 - 10:20", start: "10:00", speakers: ["James Morris"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Policy-driven approach to code integrity." },
+            { id: "448", day: '2025-12-13', title: "The Future of Platform Security Measurement in Linux", time: "10:25 - 10:45", start: "10:25", speakers: ["Maciej Pijanowski"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Platform security measurement." },
+            { id: "401", day: '2025-12-13', title: "Reconcilable Differences: Booting Linux on IBM PowerVM LPARS", time: "10:50 - 11:10", start: "10:50", speakers: ["George Wilson"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Booting on PowerVM." },
+            { id: "485", day: '2025-12-13', title: "ReLaunch Revisited: A Refresher on TrenchBoot Late Launch", time: "11:10 - 11:30", start: "11:10", speakers: ["Daniel Kiper"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Secure ReLaunch capability." },
+            { id: "417", day: '2025-12-13', title: "Design Space and Challenges in Design of Attested TLS Protocols", time: "11:45 - 12:05", start: "11:45", speakers: ["Muhammad Usama Sardar"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Standardizing attested TLS." },
+            { id: "334", day: '2025-12-13', title: "Oak stage0: a minimal firmware for (confidential) virtual machines", time: "12:05 - 12:25", start: "12:05", speakers: ["Andri Saar"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Oak stage0 firmware." },
+            { id: "58", day: '2025-12-13', title: "Who Authenticates Linux? Rethinking PAM & NSS", time: "12:30 - 12:55", start: "12:30", speakers: ["David Mulder"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Cloud Identity integration." },
+            { id: "150", day: '2025-12-13', title: "Android Boot, DRTM, UKIs", time: "13:00 - 13:30", start: "13:00", speakers: ["Dmitrii Merkurev"], room: "Hall B2", type: "System Boot MC", tagClass: "tag-mc", description: "Android boot flow." },
+
+            // VFIO/IOMMU/PCI MC (Hall B3/B4)
+            { id: "298", day: '2025-12-13', title: "Confidential Devices (TEE I/O)", time: "10:00 - 10:30", start: "10:00", speakers: ["Dan Williams"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Host side challenges." },
+            { id: "339", day: '2025-12-13', title: "iommu page table consolidation and iommufd", time: "10:30 - 11:00", start: "10:30", speakers: ["Jason Gunthorpe"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Page table consolidation." },
+            { id: "323", day: '2025-12-13', title: "vfio, iommufd: Enabling user space drivers", time: "11:00 - 11:30", start: "11:00", speakers: ["Alex Mastro"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Orchestrating access to VFIO-bound devices." },
+            { id: "263", day: '2025-12-13', title: "VFIO: Very Frightening I/O?", time: "12:00 - 12:20", start: "12:00", speakers: ["Hubertus Franke"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Taming Wild Guests." },
+            { id: "129", day: '2025-12-13', title: "A Hyper-V Based pvIOMMU", time: "12:20 - 12:40", start: "12:20", speakers: ["Yu Zhang"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Generic I/O Page Table." },
+            { id: "353", day: '2025-12-13', title: "Plumbing SDXI into Linux", time: "12:40 - 13:00", start: "12:40", speakers: ["Wei Huang"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Smart Data Accelerator Interface." },
+            { id: "356", day: '2025-12-13', title: "Turning PCIe Hints into Cache Hits", time: "13:00 - 13:15", start: "13:00", speakers: ["Wei Huang"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Smart Data Cache Injection." },
+            { id: "70", day: '2025-12-13', title: "PCI Pwrctrl woes", time: "13:15 - 13:30", start: "13:15", speakers: ["Manivannan Sadhasivam"], room: "Hall B3/B4", type: "VFIO/PCI MC", tagClass: "tag-mc", description: "Issues with pwrctrl framework." },
+
+            // x86 MC (Hall B1)
+            { id: "120", day: '2025-12-13', title: "Dynamic mitigations", time: "10:00 - 10:20", start: "10:00", speakers: ["David Kaplan"], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "Runtime CPU mitigation settings." },
+            { id: "489", day: '2025-12-13', title: "Discussion", time: "10:20 - 10:50", start: "10:20", speakers: [], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "Open Discussion" },
+            { id: "162", day: '2025-12-13', title: "The new kernel CPUID API", time: "10:50 - 11:10", start: "10:50", speakers: ["Ahmed S. Darwish"], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "New CPUID API." },
+            { id: "490", day: '2025-12-13', title: "Discussion", time: "11:10 - 11:30", start: "11:10", speakers: [], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "Open Discussion" },
+            { id: "253", day: '2025-12-13', title: "Address Space Isolation is ready", time: "12:00 - 12:20", start: "12:00", speakers: ["Brendan Jackman"], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "ASI status." },
+            { id: "491", day: '2025-12-13', title: "Discussion", time: "12:20 - 12:50", start: "12:20", speakers: [], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "Open Discussion" },
+            { id: "251", day: '2025-12-13', title: "Leveraging New General-Purpose Registers in the Kernel", time: "12:50 - 13:10", start: "12:50", speakers: ["Chang Bae"], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "APX enablement." },
+            { id: "492", day: '2025-12-13', title: "Discussion", time: "13:10 - 13:30", start: "13:10", speakers: [], room: "Hall B1", type: "x86 MC", tagClass: "tag-mc", description: "Open Discussion" },
+
+            // Devicetree MC (Hall B3/B4) - Afternoon
+            { id: "170", day: '2025-12-13', title: "Status of DTS validation in the Linux kernel", time: "15:00 - 15:20", start: "15:00", speakers: ["Krzysztof Kozlowski"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "Current status of DTS validation." },
+            { id: "299", day: '2025-12-13', title: "Improving fw_devlink dependency tracking", time: "15:20 - 15:40", start: "15:20", speakers: ["Saravana Kannan"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "Optimizing fw_devlink." },
+            { id: "104", day: '2025-12-13', title: "\"Exclusive\" resources that are not exclusive", time: "15:45 - 16:05", start: "15:45", speakers: ["Bartosz Golaszewski"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "Shared GPIOs in DT." },
+            { id: "196", day: '2025-12-13', title: "Power Sequencing for Enumerable Busses", time: "16:10 - 16:30", start: "16:10", speakers: ["Chen-Yu Tsai"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "Missing pieces in Device Tree and Kernel." },
+            { id: "181", day: '2025-12-13', title: "MiPi vs ACPI vs Device tree bindings", time: "17:00 - 17:20", start: "17:00", speakers: ["Srini Kandagatla"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "Consolidation discussion." },
+            { id: "229", day: '2025-12-13', title: "DT formatter", time: "17:25 - 17:45", start: "17:25", speakers: ["Konrad Dybcio"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "Style-related feedback." },
+            { id: "198", day: '2025-12-13', title: "Device Tree Metadata", time: "17:50 - 18:10", start: "17:50", speakers: ["Chen-Yu Tsai"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "How Bootloaders Pick DTBs." },
+            { id: "15", day: '2025-12-13', title: "Devicetree loading for dummies (EFI edition)", time: "18:10 - 18:30", start: "18:10", speakers: ["Casey Connolly"], room: "Hall B3/B4", type: "Devicetree MC", tagClass: "tag-mc", description: "Devicetree Selection problem." },
+
+            // Gaming MC (Hall B2) - Afternoon
+            { id: "480", day: '2025-12-13', title: "Welcome to the Gaming MC!", time: "15:00 - 15:05", start: "15:00", speakers: ["André Almeida", "David Vernet"], room: "Hall B2", type: "Gaming MC", tagClass: "tag-mc", description: "Welcome." },
+            { id: "484", day: '2025-12-13', title: "Resource management on embedded gaming devices", time: "15:05 - 15:35", start: "15:05", speakers: ["Stefan Bossbaly"], room: "Hall B2", type: "Gaming MC", tagClass: "tag-mc", description: "Orchestrator solution." },
+            { id: "396", day: '2025-12-13', title: "Level Up Your Game", time: "15:35 - 16:05", start: "15:35", speakers: ["Ramesh Peri"], room: "Hall B2", type: "Gaming MC", tagClass: "tag-mc", description: "OS Kernel and Game Interactions with Perfetto." },
+            { id: "205", day: '2025-12-13', title: "A new API for robust futex list", time: "16:05 - 16:30", start: "16:05", speakers: ["André Almeida"], room: "Hall B2", type: "Gaming MC", tagClass: "tag-mc", description: "Proposal for new interface." },
+            { id: "433", day: '2025-12-13', title: "Steps Towards a Gaming-Optimized Scheduler", time: "17:00 - 17:30", start: "17:00", speakers: ["Changwoo Min"], room: "Hall B2", type: "Gaming MC", tagClass: "tag-mc", description: "LAVD scheduler." },
+            { id: "431", day: '2025-12-13', title: "Proactive and crash-time data collection on Steam Deck", time: "17:30 - 18:00", start: "17:30", speakers: ["Guilherme G. Piccoli"], room: "Hall B2", type: "Gaming MC", tagClass: "tag-mc", description: "Tracing system on Steam Deck." },
+            { id: "481", day: '2025-12-13', title: "Gaming MC BoF", time: "18:00 - 18:10", start: "18:00", speakers: [], room: "Hall B2", type: "Gaming MC", tagClass: "tag-mc", description: "Open discussion." },
+
+            // Live Update MC (Hall A2/3) - Afternoon
+            { id: "245", day: '2025-12-13', title: "Live Update Orchestrator", time: "15:00 - 15:15", start: "15:00", speakers: ["Pasha Tatashin"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "Introducing LUO." },
+            { id: "221", day: '2025-12-13', title: "Managing serialization versions for LUO objects", time: "15:15 - 15:30", start: "15:15", speakers: ["Pratyush Yadav"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "Versioning." },
+            { id: "227", day: '2025-12-13', title: "KSTATE as [de]serializer of kernel's state", time: "15:30 - 15:45", start: "15:30", speakers: ["Andrey Ryabinin"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "KSTATE discussion." },
+            { id: "91", day: '2025-12-13', title: "Memory preservation using LUO", time: "15:45 - 16:00", start: "15:45", speakers: ["Pratyush Yadav"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "memfd preservation." },
+            { id: "268", day: '2025-12-13', title: "Kexec Handover Performance Improvements", time: "16:00 - 16:15", start: "16:00", speakers: ["Jason Miu"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "Stateless KHO." },
+            { id: "246", day: '2025-12-13', title: "Blackout Reduction", time: "16:15 - 16:30", start: "16:15", speakers: ["Pasha Tatashin"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "Improving kexec performance." },
+            { id: "156", day: '2025-12-13', title: "Supporting Live Update in VFIO", time: "17:00 - 17:15", start: "17:00", speakers: ["David Matlack", "Josh Hilke"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "VFIO for PCI devices." },
+            { id: "165", day: '2025-12-13', title: "IOMMU State Preservation for Kernel Liveupdate", time: "17:15 - 17:30", start: "17:15", speakers: ["Samiullah Khawaja"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "Preserving IOMMU state." },
+            { id: "88", day: '2025-12-13', title: "PCI liveupdate subsystem and PCI device", time: "17:30 - 17:45", start: "17:30", speakers: ["Chris Li"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "Managing PCI device." },
+            { id: "220", day: '2025-12-13', title: "PCSC: Caching PCI Config Space Accesses", time: "17:45 - 18:00", start: "17:45", speakers: ["Evangelos Petrongonas"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "Faster Live Updates." },
+            { id: "180", day: '2025-12-13', title: "IDPF live-update support", time: "18:00 - 18:15", start: "18:00", speakers: ["Brian Vazquez"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "IDPF driver case study." },
+            { id: "233", day: '2025-12-13', title: "Supporting Hypervisor Kexec with Modern Devices", time: "18:15 - 18:30", start: "18:15", speakers: ["Adithya Jayachandran", "Saeed Mahameed"], room: "Hall A2/3", type: "Live Update MC", tagClass: "tag-mc", description: "mlx5 driver changes." },
+
+            // Nova GPU (Hall B1) - Afternoon
+            { id: "488", day: '2025-12-13', title: "Nova GPU Workshop", time: "15:00 - 16:30", start: "15:00", speakers: ["Alexandre Courbot", "Danilo Krummrich", "David Airlie"], room: "Hall B1", type: "Workshop", tagClass: "tag-workshop", description: "Rust-based kernel driver for NVIDIA GPUs." },
+            
+            // BoF No A/V (Meeting Room 1) - Friday/Saturday
+            // Note: BoFs in Meeting Room 1 from PDF are listed for Friday, but checking date... PDF lists "Birds of a Feather (BoF) (no A/V) - "Meeting Room 1" (Dec 12...)"
+            // Let's ensure these are Friday.
+            { id: "497", day: '2025-12-12', title: "Toward Mainline Linux Support for UALink", time: "10:00 - 10:45", start: "10:00", speakers: ["Konstantin Sinyuk"], room: "Meeting Room 1", type: "BoF", tagClass: "tag-bof", description: "UALink AI Scale-UP Interconnect." },
+            { id: "499", day: '2025-12-12', title: "BoF: memory fragmentation with LBS", time: "10:45 - 11:30", start: "10:45", speakers: ["Hannes Reinecke"], room: "Meeting Room 1", type: "BoF", tagClass: "tag-bof", description: "Discussion on fragmentation." },
+            { id: "500", day: '2025-12-12', title: "Unified Linux GPU compute kernel driver", time: "12:00 - 12:45", start: "12:00", speakers: ["Luis Chamberlain"], room: "Meeting Room 1", type: "BoF", tagClass: "tag-bof", description: "Unified GPU compute driver proposal." },
+            
+            // Socials
+            { id: "sat_ev", day: '2025-12-13', title: "Evening Event", time: "19:00 - 22:00", start: "19:00", speakers: [], room: "TBD", type: "Social", tagClass: "tag-social", description: "Evening event details are on the back of your badge." }
+        ];
+
+        let currentDay = '2025-12-11';
+        let currentFilter = '';
+
+        // --- Render Logic ---
+        function switchDay(day) {
+            currentDay = day;
+            
+            // Update Tabs
+            document.querySelectorAll('.day-tab').forEach(tab => {
+                const isSelected = tab.id === `tab-${day}`;
+                if (isSelected) {
+                    tab.classList.remove('text-slate-500', 'border-transparent');
+                    tab.classList.add('text-indigo-600', 'border-indigo-600');
+                } else {
+                    tab.classList.add('text-slate-500', 'border-transparent');
+                    tab.classList.remove('text-indigo-600', 'border-indigo-600');
+                }
+            });
+
+            renderSchedule();
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('schedule-container');
+            container.innerHTML = '';
+            
+            const normalizedFilter = currentFilter.toLowerCase();
+            
+            // Filter Data by Day AND Search
+            const filteredData = scheduleData.filter(item => {
+                const matchesDay = item.day === currentDay;
+                const searchStr = `${item.title} ${item.room} ${item.speakers.join(' ')} ${item.type} ${item.description}`.toLowerCase();
+                const matchesSearch = searchStr.includes(normalizedFilter);
+                return matchesDay && matchesSearch;
+            });
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 flex flex-col items-center">
+                        <div class="bg-slate-100 p-4 rounded-full mb-4">
+                            <i class="ph ph-calendar-x text-3xl text-slate-400"></i>
+                        </div>
+                        <p class="text-slate-500 font-medium">No sessions found.</p>
+                        <p class="text-xs text-slate-400 mt-1">Try changing the day or search filter.</p>
+                    </div>`;
+                return;
+            }
+
+            // Group by Start Time
+            const grouped = filteredData.reduce((acc, item) => {
+                if (!acc[item.start]) acc[item.start] = [];
+                acc[item.start].push(item);
+                return acc;
+            }, {});
+
+            const sortedTimes = Object.keys(grouped).sort();
+
+            sortedTimes.forEach(time => {
+                const sessions = grouped[time];
+                
+                // Section
+                const section = document.createElement('div');
+                section.className = 'mb-8 animate-[fadeIn_0.3s_ease-out]';
+                
+                // Sticky Time Header
+                const header = document.createElement('div');
+                header.className = 'flex items-center gap-3 mb-4 sticky top-[120px] z-10 py-3 -mx-4 px-4 bg-[#f8fafc]/95 backdrop-blur-sm border-b border-transparent';
+                header.innerHTML = `
+                    <div class="flex flex-col items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-100">
+                        <span class="text-xs font-bold text-slate-400 uppercase leading-none">Start</span>
+                        <span class="text-base font-bold text-indigo-600 leading-tight">${time}</span>
+                    </div>
+                    <div class="h-[1px] flex-1 bg-slate-200"></div>
+                `;
+                section.appendChild(header);
+
+                // Grid
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 gap-3 pl-2 border-l-2 border-slate-200 ml-6';
+
+                sessions.forEach(session => {
+                    const card = document.createElement('div');
+                    card.onclick = () => openModal(session.id);
+                    card.className = 'session-card bg-white rounded-xl p-4 shadow-sm border border-slate-200 relative overflow-hidden group hover:shadow-md';
+                    
+                    // Speakers
+                    const speakersHtml = session.speakers.length > 0 
+                        ? `<div class="mt-3 flex flex-wrap gap-1">
+                            ${session.speakers.map(s => `<span class="inline-flex items-center text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded-md"><i class="ph-fill ph-user mr-1 text-slate-400"></i>${s}</span>`).join('')}
+                           </div>`
+                        : '';
+
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${session.tagClass}">
+                                ${session.type}
+                            </span>
+                            <div class="flex items-center text-xs font-medium text-slate-500">
+                                <i class="ph-fill ph-map-pin mr-1 text-indigo-400"></i> ${session.room}
+                            </div>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800 leading-snug mb-1 group-hover:text-indigo-600 transition-colors">${session.title}</h3>
+                        <p class="text-xs text-slate-500 font-medium mb-1 line-clamp-2">${session.description}</p>
+                        <div class="flex items-center gap-2 text-xs text-slate-400 mt-2">
+                             <i class="ph ph-clock"></i> ${session.time}
+                        </div>
+                        ${speakersHtml}
+                    `;
+                    grid.appendChild(card);
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+        }
+
+        // --- Modal Logic ---
+        const modalOverlay = document.getElementById('modal-overlay');
+        const body = document.body;
+
+        function openModal(id) {
+            const session = scheduleData.find(s => s.id === id);
+            if (!session) return;
+
+            document.getElementById('modal-title').textContent = session.title;
+            document.getElementById('modal-time').textContent = session.time;
+            document.getElementById('modal-room').textContent = session.room;
+            document.getElementById('modal-description').textContent = session.description;
+            
+            const typeEl = document.getElementById('modal-type');
+            typeEl.textContent = session.type;
+            typeEl.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${session.tagClass}`;
+
+            const speakersContainer = document.getElementById('modal-speakers');
+            if (session.speakers.length > 0) {
+                document.getElementById('modal-speakers-container').style.display = 'block';
+                speakersContainer.innerHTML = session.speakers.map(s => 
+                    `<div class="flex items-center gap-2 bg-slate-100 rounded-lg p-2 pr-3">
+                        <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                            <i class="ph-fill ph-user"></i>
+                        </div>
+                        <span class="text-sm font-medium text-slate-700">${s}</span>
+                    </div>`
+                ).join('');
+            } else {
+                document.getElementById('modal-speakers-container').style.display = 'none';
+            }
+
+            modalOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                modalOverlay.classList.remove('opacity-0');
+                modalOverlay.classList.add('open');
+            }, 10);
+            body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('open');
+            modalOverlay.classList.add('opacity-0');
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+                body.style.overflow = '';
+            }, 250);
+        }
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // --- Clock Logic ---
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+            document.getElementById('live-clock').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- Event Listeners ---
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            currentFilter = e.target.value;
+            renderSchedule();
+        });
+
+        // Initial Render
+        renderSchedule();
+
+    </script>
+</body>
+</html>
